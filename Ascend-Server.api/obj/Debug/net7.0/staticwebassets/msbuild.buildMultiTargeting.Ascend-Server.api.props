@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\Ascend-Server.api.props" />
+</Project>
