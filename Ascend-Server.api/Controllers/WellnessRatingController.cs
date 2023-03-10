@@ -33,7 +33,7 @@ public class WellnessRatingController: ControllerBase
     public IActionResult Create(WellnessRating wellnessRating)
     {   
         try
-        {
+        {    Console.WriteLine("Try Post");
             WellnessRatingService.Add(wellnessRating); 
             return CreatedAtAction(nameof(GetAllForUserId), new {id = wellnessRating.Id}, wellnessRating);
         }
@@ -41,7 +41,7 @@ public class WellnessRatingController: ControllerBase
         {
             return new BadRequestObjectResult(e.Message);
         }
-        catch(Exception e)
+        catch(Exception)
         {
             return new BadRequestResult(); 
         }

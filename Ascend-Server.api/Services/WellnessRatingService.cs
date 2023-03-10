@@ -14,33 +14,33 @@ public static class WellnessRatingService
             new WellnessRating {
                 Id = 1,
                 UserId = 1,
-                date = "03-02-2023",
-                sleepRating = 7, 
-                exerciseRating = 5, 
-                nutritionRating = 2, 
-                stressRating = 9, 
-                sunlightRating = 4, 
-                mindfulnessRating = 2, 
-                productivityRating = 9, 
-                moodRating = 9, 
-                energyRating = 9, 
-                overallDayRating = 4
+                Date =  new DateTime(2023, 3, 2),
+                SleepRating = 7, 
+                ExerciseRating = 5, 
+                NutritionRating = 2, 
+                StressRating = 9, 
+                SunlightRating = 4, 
+                MindfulnessRating = 2, 
+                ProductivityRating = 9, 
+                MoodRating = 9, 
+                EnergyRating = 9, 
+                OverallDayRating = 4
             },
 
             new WellnessRating {
                 Id = 2,
                 UserId = 2,
-                date = "03-01-2023",
-                sleepRating = 7, 
-                exerciseRating = 5, 
-                nutritionRating = 2, 
-                stressRating = 9, 
-                sunlightRating = 4, 
-                mindfulnessRating = 2, 
-                productivityRating = 9, 
-                moodRating = 9, 
-                energyRating = 9, 
-                overallDayRating = 4
+                Date =  new DateTime(2023, 3, 1),
+                SleepRating = 7, 
+                ExerciseRating = 5, 
+                NutritionRating = 2, 
+                StressRating = 9, 
+                SunlightRating = 4, 
+                MindfulnessRating = 2, 
+                ProductivityRating = 9, 
+                MoodRating = 9, 
+                EnergyRating = 9, 
+                OverallDayRating = 4
             }
 
          
@@ -52,12 +52,12 @@ public static class WellnessRatingService
     public static WellnessRating? Get(int id) => WellnessRatings.FirstOrDefault(wr => wr.Id == id);
 
     public static void Add(WellnessRating wellnessRating)
-    {
-        //check if there is already an existing entry for the sent date and current user
-        var existsForSameDate = WellnessRatings.Where(wr => wr.UserId == wellnessRating.UserId && wr.date == wellnessRating.date);
+    {   
+        var existsForSameDate = WellnessRatings.Where(wr => wr.UserId == wellnessRating.UserId && wr.Date.Date == wellnessRating.Date.Date);
+        
         if(existsForSameDate.Any())
-        {
-            throw new DuplicateWellnessRatingException(wellnessRating.date);
+        {   
+            throw new DuplicateWellnessRatingException(wellnessRating.Date);
         }
         //will have to verify userId is valid at some point
         //if userId does not exist, record should not be added

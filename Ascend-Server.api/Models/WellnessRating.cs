@@ -4,15 +4,15 @@ public class WellnessRating
 {
     public int Id {get;set;}
     public int UserId {get;set;}
-    public string? date {get; set;}//will change to DateTime obj
-    public int sleepRating {get; set;}
-    public int exerciseRating {get; set;}
-    public int nutritionRating {get; set;}
-    public int stressRating {get; set;}
-    public int sunlightRating {get; set;}
-    public int mindfulnessRating {get; set;}
-    public int productivityRating {get; set;}
-    public int moodRating {get; set;}
-    public int energyRating {get; set;}
-    public int overallDayRating {get; set;}
+    public DateTime Date {get; set;}
+    public int SleepRating {get; set;}
+    public int ExerciseRating {get; set;}
+    public int NutritionRating {get; set;}
+    public int StressRating {get; set;}
+    public int SunlightRating {get; set;}
+    public int MindfulnessRating {get; set;}
+    public int ProductivityRating {get; set;}
+    public int MoodRating {get; set;}
+    public int EnergyRating {get; set;}
+    public int OverallDayRating {get; set;}
 }
