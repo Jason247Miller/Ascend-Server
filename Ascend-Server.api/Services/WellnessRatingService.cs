@@ -1,14 +1,17 @@
 using Models; 
 using Exceptions; 
-using System; 
+using System;
+using Services; 
 namespace Services; 
 
-public static class WellnessRatingService
+public class WellnessRatingService:IWellnessRatingService
 {
-    static List<WellnessRating> WellnessRatings { get; }
-    static int nextId = 3;
-    static WellnessRatingService()
+     List<WellnessRating> WellnessRatings { get; }
+     int nextId = 3;
+     private readonly IUserService _userService; 
+     public WellnessRatingService(IUserService userService)
     {
+        _userService = userService; 
         WellnessRatings = new List<WellnessRating>
         {
             new WellnessRating {
@@ -47,33 +50,42 @@ public static class WellnessRatingService
         };
     }
 
-    public static List<WellnessRating> GetAll() => WellnessRatings;
+    public List<WellnessRating> GetAll() => WellnessRatings;
    
-    public static WellnessRating? Get(int id) => WellnessRatings.FirstOrDefault(wr => wr.Id == id);
+    public WellnessRating? Get(int id) => WellnessRatings.FirstOrDefault(wr => wr.Id == id);
 
-    public static void Add(WellnessRating wellnessRating)
+    public void Add(WellnessRating wellnessRating)
     {   
+        if(_userService.CheckUser(wellnessRating.UserId) == null)
+        {
+         throw new UserDoesNotExistException(wellnessRating.UserId);  
+        }
         var existsForSameDate = WellnessRatings.Where(wr => wr.UserId == wellnessRating.UserId && wr.Date.Date == wellnessRating.Date.Date);
         
         if(existsForSameDate.Any())
         {   
             throw new DuplicateWellnessRatingException(wellnessRating.Date);
         }
-        //will have to verify userId is valid at some point
-        //if userId does not exist, record should not be added
+       
         wellnessRating.Id = nextId++;
         WellnessRatings.Add(wellnessRating);
     }
 
-     public static List<WellnessRating> GetAllForUserId(int userId)
+     public  List<WellnessRating> GetAllForUserId(int userId)
     {
+      if(_userService.CheckUser(userId) == null)
+      {
+         throw new UserDoesNotExistException(userId);  
+      }
+
       List<WellnessRating> userWellnessRatings = WellnessRatings.Where(r => r.UserId == userId).ToList();
       return userWellnessRatings; 
     }
 
-    public static void Update(WellnessRating wellnessRating)
+    public  void Update(WellnessRating wellnessRating)
     {
-        var index = WellnessRatings.FindIndex(wr => wr.Id == wr.Id);
+        
+        var index = WellnessRatings.FindIndex(wr => wr.Id == wellnessRating.Id);
        
         if(index == 0)
         {  
@@ -85,4 +97,6 @@ public static class WellnessRatingService
         }
      
     }
+
+
 }

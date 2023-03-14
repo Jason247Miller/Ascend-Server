@@ -6,7 +6,7 @@ namespace Exceptions;
     {
         private readonly object _item;
 
-        public override string Message => $"{_item}' was not found in the database.";
+        public override string Message => $"{_item}' does not exists.";
 
         public NotFoundException(object item)
         {

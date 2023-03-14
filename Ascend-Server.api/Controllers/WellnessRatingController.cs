@@ -2,27 +2,40 @@ using Models;
 using Services; 
 using Exceptions; 
 using Microsoft.AspNetCore.Mvc;
- 
+
 namespace Controllers; 
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class WellnessRatingController: ControllerBase
-{
-    public WellnessRatingController()
+{ 
+    private readonly IWellnessRatingService _wellnessRatingService;
+    public WellnessRatingController(IWellnessRatingService wellnessRatingService)
     {
-    //would set the data context here if I had a database
+     _wellnessRatingService = wellnessRatingService; 
     }
     
     [HttpGet]
     public ActionResult<List<WellnessRating>> GetAll() =>
-        WellnessRatingService.GetAll(); 
+        _wellnessRatingService.GetAll(); 
         
     [HttpGet("{id}")]
     public ActionResult<List<WellnessRating>> GetAllForUserId(int id)
     {
-        var wellnessRatingsForUserId = WellnessRatingService.GetAllForUserId(id);
-
+        List<WellnessRating> wellnessRatingsForUserId;
+        try
+        {
+          wellnessRatingsForUserId = _wellnessRatingService.GetAllForUserId(id);
+        }
+        catch(UserDoesNotExistException e)
+        {
+            return new BadRequestObjectResult(e.Message);
+        }
+        catch(Exception)
+        {
+          return new BadRequestResult();
+        }
+        
         if(wellnessRatingsForUserId == null)
             return NotFound(); 
 
@@ -33,13 +46,17 @@ public class WellnessRatingController: ControllerBase
     public IActionResult Create(WellnessRating wellnessRating)
     {   
         try
-        {    Console.WriteLine("Try Post");
-            WellnessRatingService.Add(wellnessRating); 
+        {   
+            _wellnessRatingService.Add(wellnessRating); 
             return CreatedAtAction(nameof(GetAllForUserId), new {id = wellnessRating.Id}, wellnessRating);
         }
         catch(DuplicateWellnessRatingException e)
         {
             return new BadRequestObjectResult(e.Message);
+        }
+        catch(UserDoesNotExistException e)
+        {
+            return new BadRequestObjectResult(e.Message); 
         }
         catch(Exception)
         {
@@ -54,7 +71,7 @@ public class WellnessRatingController: ControllerBase
     {  
         try
         { 
-            WellnessRatingService.Update(wellnessRating); 
+            _wellnessRatingService.Update(wellnessRating); 
             
             return NoContent(); 
         }
