@@ -42,7 +42,7 @@ public class UserService : IUserService
         
         if(userEmailExists == null)
         {   
-            throw new UserEmailExistsException(user);
+            throw new EmailDoesNotExistException(user.Email);
         }
   
         user.Id = nextId++;
@@ -51,7 +51,7 @@ public class UserService : IUserService
 
     public void Update(User user)
     {
-         var index = Users.FindIndex(u => u.Id == user.Id);
+        var index = Users.FindIndex(u => u.Id == user.Id);
        
         if(index == 0)
         {  
@@ -76,13 +76,33 @@ public class UserService : IUserService
         {
          Users.RemoveAt(index); 
         }
-        
     }
  
-public User CheckUser(int id)
-{   
-    var user = Users.FirstOrDefault(u => u.Id == id);
-    
-    return user as User; 
-}
+    public User? CheckUser(int id)
+    {   
+        var user = Users.FirstOrDefault(u => u.Id == id);
+
+        return user as User;
+    }
+    public User? FindUserByEmail(string email)
+    {
+        
+        var user = Users.FirstOrDefault(u => u.Email == email);
+        if(user == null)
+        {
+            throw new EmailDoesNotExistException(email);
+        }
+        
+
+        return user as User; 
+    }
+
+    public void VerifyPassword(User user, string password)
+    {
+        if(user.Password != password)
+        {
+            var email = user.Email ?? "";//should never be null, just wanted to elminate all warnings 
+            throw new InvalidPasswordException(email);
+        }
+    }
 }

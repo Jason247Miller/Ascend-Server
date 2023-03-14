@@ -7,7 +7,7 @@ public class Habit
     [Required]
     public int UserId {get; set;}
     [Required]
-    public string Uuid {get; set;}
-    public bool Deleted {get; set;}
-    public string HabitName {get; set;}
+    public string? Uuid {get; set;}
+    public bool? Deleted {get; set;}
+    public string? HabitName {get; set;}
 }
