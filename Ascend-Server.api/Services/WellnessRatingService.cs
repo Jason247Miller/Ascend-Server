@@ -17,7 +17,7 @@ public class WellnessRatingService:IWellnessRatingService
             new WellnessRating {
                 Id = 1,
                 UserId = 1,
-                Date =  new DateTime(2023, 3, 2),
+                Date =  new DateOnly(2023, 3, 16),
                 SleepRating = 7, 
                 ExerciseRating = 5, 
                 NutritionRating = 2, 
@@ -33,7 +33,7 @@ public class WellnessRatingService:IWellnessRatingService
             new WellnessRating {
                 Id = 2,
                 UserId = 2,
-                Date =  new DateTime(2023, 3, 1),
+                Date =  new DateOnly(2023, 3, 16),
                 SleepRating = 7, 
                 ExerciseRating = 5, 
                 NutritionRating = 2, 
@@ -60,7 +60,7 @@ public class WellnessRatingService:IWellnessRatingService
         {
          throw new UserDoesNotExistException(wellnessRating.UserId);  
         }
-        var existsForSameDate = WellnessRatings.Where(wr => wr.UserId == wellnessRating.UserId && wr.Date.Date == wellnessRating.Date.Date);
+        var existsForSameDate = WellnessRatings.Where(wr => wr.UserId == wellnessRating.UserId && wr.Date == wellnessRating.Date);
         
         if(existsForSameDate.Any())
         {   
@@ -84,10 +84,12 @@ public class WellnessRatingService:IWellnessRatingService
 
     public  void Update(WellnessRating wellnessRating)
     {
-        
-        var index = WellnessRatings.FindIndex(wr => wr.Id == wellnessRating.Id);
+        var index = WellnessRatings.FindIndex(
+            wr => wr.Id == wellnessRating.Id &&
+            wr.UserId == wellnessRating.UserId
+            );
        
-        if(index == 0)
+        if(index == -1)
         {  
             throw new NotFoundException(wellnessRating); 
         }

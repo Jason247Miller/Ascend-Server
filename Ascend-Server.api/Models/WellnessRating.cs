@@ -2,12 +2,13 @@ using System.ComponentModel.DataAnnotations;
 namespace Models; 
 
 public class WellnessRating
-{   [Required]
+{   
+    [Key]
     public int Id {get;set;}
     [Required]
     public int UserId {get;set;}
     [Required]
-    public DateTime Date {get; set;}
+    public DateOnly Date {get; set;}
     [Range(1,10)]
     public int SleepRating {get; set;}
     [Range(1,10)]

@@ -25,7 +25,7 @@ public class HabitService:IHabitService
             new Habit {
                 Id = 2,
                 UserId = 1,
-                HabitName = "20 minutes of cardio",
+                HabitName = "Learned 1 new thing",
                 Uuid = "2e2bd1d4-c4a3-475a-bc8a-5aea1156e0ec", 
                 Deleted = false           
             }
@@ -59,6 +59,29 @@ public class HabitService:IHabitService
        
         habit.Id = nextId++;
         Habits.Add(habit);
+    }
+
+    public void Update(Habit habit)
+    {
+        var index = Habits.FindIndex(
+            h => h.Id == habit.Id &&
+            h.UserId == habit.UserId
+            );
+       
+        if(index == -1)
+        {  
+            throw new NotFoundException(habit); 
+        }
+        else
+        {
+            Habits[index] = habit;
+        }
+     
+    }
+    public bool HabitExistsAndNotDeleted(string? habitIdPassed, int userIdPassed)
+    {
+       return Habits.Any(h => h.Uuid == habitIdPassed && h.Deleted == false && h.UserId == userIdPassed);
+        
     }
    
 }

@@ -53,7 +53,7 @@ public class UserService : IUserService
     {
         var index = Users.FindIndex(u => u.Id == user.Id);
        
-        if(index == 0)
+        if(index == -1)
         {  
             throw new NotFoundException(user); 
         }
@@ -68,7 +68,7 @@ public class UserService : IUserService
     {
         var index = Users.FindIndex(u => u.Id == user.Id);
         
-        if(index == 0)
+        if(index == -1)
         {
             throw new NotFoundException(user); 
         }

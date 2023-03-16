@@ -34,6 +34,8 @@ public class HabitController: ControllerBase
       return habitsForUserId; 
     }
 
+    
+
     [HttpPost]
     public IActionResult Create(Habit habit)
     { 
@@ -48,6 +50,25 @@ public class HabitController: ControllerBase
         }
         
        
+    }
+
+    [HttpPut("{id}")]
+    public IActionResult Update(int id, Habit habit)
+    {  
+        try
+        { 
+            _habitService.Update(habit); 
+            
+            return NoContent(); 
+        }
+        catch(NotFoundException e )
+        {  
+            return new BadRequestObjectResult(e.Message);
+        }
+        catch(Exception)
+        {
+            return new BadRequestResult(); 
+        }
     }
 
 }

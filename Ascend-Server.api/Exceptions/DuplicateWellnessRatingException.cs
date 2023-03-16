@@ -3,10 +3,10 @@ namespace Exceptions;
 
  public class DuplicateWellnessRatingException :Exception
 {
-    private readonly DateTime _date; 
+    private readonly DateOnly _date; 
     public override string Message => $"A wellness rating for the date: '{_date}'  already exists.";
 
-    public DuplicateWellnessRatingException(DateTime date)
+    public DuplicateWellnessRatingException(DateOnly date)
     {
         _date = date; 
     }

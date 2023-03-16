@@ -14,11 +14,7 @@ public class WellnessRatingController: ControllerBase
     {
      _wellnessRatingService = wellnessRatingService; 
     }
-    
-    [HttpGet]
-    public ActionResult<List<WellnessRating>> GetAll() =>
-        _wellnessRatingService.GetAll(); 
-        
+     
     [HttpGet("{id}")]
     public ActionResult<List<WellnessRating>> GetAllForUserId(int id)
     {
