@@ -101,7 +101,7 @@ public class UserService : IUserService
     {
         if(user.Password != password)
         {
-            var email = user.Email ?? "";//should never be null, just wanted to elminate all warnings 
+            var email = user.Email ?? "";
             throw new InvalidPasswordException(email);
         }
     }

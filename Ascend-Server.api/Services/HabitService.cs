@@ -46,9 +46,9 @@ public class HabitService:IHabitService
 
     public void Add(Habit habit)
     {
-         if(_userService.CheckUser(habit.UserId) == null)
+        if(_userService.CheckUser(habit.UserId) == null)
         {
-         throw new UserDoesNotExistException(habit.UserId);  
+            throw new UserDoesNotExistException(habit.UserId);  
         }
         var habitsForUser = Habits.Where(h => h.UserId == habit.UserId && h.Uuid == habit.Uuid);
         

@@ -1,11 +1,10 @@
+ 
+using System; 
 using Services; 
 using Microsoft.AspNetCore.Cors;
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
-//dependency injection
 builder.Services.AddControllers(); 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -36,5 +35,5 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
-
+//AddTestData(app);
 app.Run();

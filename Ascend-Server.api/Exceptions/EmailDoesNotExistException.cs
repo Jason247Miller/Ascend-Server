@@ -13,4 +13,5 @@ public class EmailDoesNotExistException : Exception
         {
             _email = email ?? "";
         }
+        
 }

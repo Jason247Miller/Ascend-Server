@@ -21,7 +21,6 @@ public class LoginController : ControllerBase
     User? user; 
     try
     {
-
      user = _userService.FindUserByEmail(request.Email!);
 
      _userService.VerifyPassword(user!, request.Password!); 

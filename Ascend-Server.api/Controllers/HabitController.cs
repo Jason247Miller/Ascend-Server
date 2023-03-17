@@ -15,9 +15,12 @@ public class HabitController: ControllerBase
     {
      _habitService = habitService; 
     }
+
     [HttpGet("{id}")]
     public ActionResult<List<Habit>> GetAllForUserId(int id)
-    {   List<Habit> habitsForUserId;
+    {   
+        List<Habit> habitsForUserId;
+
         try
         {
             habitsForUserId = _habitService.GetAllForUserId(id); 
@@ -49,7 +52,6 @@ public class HabitController: ControllerBase
             return new BadRequestObjectResult(e.Message);
         }
         
-       
     }
 
     [HttpPut("{id}")]
