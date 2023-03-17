@@ -18,6 +18,7 @@ public class HabitController: ControllerBase
     [HttpGet("{id}")]
     public ActionResult<List<Habit>> GetAllForUserId(int id)
     {   List<Habit> habitsForUserId;
+
         try
         {
             habitsForUserId = _habitService.GetAllForUserId(id); 

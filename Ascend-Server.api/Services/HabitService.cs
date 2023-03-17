@@ -8,29 +8,38 @@ public class HabitService:IHabitService
 {
      List<Habit> Habits { get; }
      int nextId = 3;
-     private readonly IUserService _userService; 
-     public HabitService(IUserService userService)
+     private readonly IUserService _userService;
+     private readonly ApiContext _apiContext; 
+     public HabitService(
+         IUserService userService,
+         ApiContext apiContext
+         )
     {
-        _userService = userService;//used to check user id, may not be needed later?
-        Habits = new List<Habit>
-        {
-            new Habit {
-                Id = 1,
-                UserId = 1,
-                HabitName = "20 minutes of cardio",
-                Uuid = "d58a9560-3ed8-4eaa-b97e-c558179861e8", 
-                Deleted = false           
-            },
+        _apiContext = apiContext; 
 
-            new Habit {
-                Id = 2,
-                UserId = 1,
-                HabitName = "Learned 1 new thing",
-                Uuid = "2e2bd1d4-c4a3-475a-bc8a-5aea1156e0ec", 
-                Deleted = false           
-            }
+        _userService = userService;
 
-        };
+
+
+        //Habits = new List<Habit>
+        //{
+        //    new Habit {
+        //        Id = 1,
+        //        UserId = 1,
+        //        HabitName = "20 minutes of cardio",
+        //        Uuid = "d58a9560-3ed8-4eaa-b97e-c558179861e8",
+        //        Deleted = false
+        //    },
+
+        //    new Habit {
+        //        Id = 2,
+        //        UserId = 1,
+        //        HabitName = "Learned 1 new thing",
+        //        Uuid = "2e2bd1d4-c4a3-475a-bc8a-5aea1156e0ec",
+        //        Deleted = false
+        //    }
+
+        //};
     }
 
     public List<Habit> GetAllForUserId(int userId)
@@ -40,7 +49,7 @@ public class HabitService:IHabitService
          throw new Exception("Invalid Request");  
       }
 
-      List<Habit> userHabits = Habits.Where(h => h.UserId == userId).ToList();
+      List<Habit> userHabits = _apiContext.Habits.Where(h => h.UserId == userId).ToList();
       return userHabits; 
     }
 
@@ -50,7 +59,7 @@ public class HabitService:IHabitService
         {
          throw new UserDoesNotExistException(habit.UserId);  
         }
-        var habitsForUser = Habits.Where(h => h.UserId == habit.UserId && h.Uuid == habit.Uuid);
+        var habitsForUser = _apiContext.Habits.Where(h => h.UserId == habit.UserId && h.Uuid == habit.Uuid);
         
         if(habitsForUser.Any())
         {   
@@ -58,12 +67,12 @@ public class HabitService:IHabitService
         }
        
         habit.Id = nextId++;
-        Habits.Add(habit);
+        _apiContext.Habits.Add(habit);
     }
-
+    
     public void Update(Habit habit)
     {
-        var index = Habits.FindIndex(
+        var index = _apiContext.Habits.ToList().FindIndex(
             h => h.Id == habit.Id &&
             h.UserId == habit.UserId
             );

@@ -1,5 +1,7 @@
+using Microsoft.EntityFrameworkCore; 
+using Models;
 using Services; 
-using Microsoft.AspNetCore.Cors;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +18,7 @@ builder.Services.AddScoped<IHabitCompletionLogService, HabitCompletionLogService
 builder.Services.AddScoped<IHabitCompletionLogService, HabitCompletionLogService>();
 builder.Services.AddScoped<IGuidedJournalEntryService, GuidedJournalEntryService>();
 builder.Services.AddScoped<IGuidedJournalLogService, GuidedJournalLogService>();
+builder.Services.AddDbContext<ApiContext>(options => options.UseInMemoryDatabase("ApiContext"));
 var app = builder.Build();
 
 //configure CORS
@@ -36,5 +39,18 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+
+    
+        var context = services.GetRequiredService<ApiContext>();
+        context.Database.EnsureCreated();
+        context.Seed(services);
+    
+    
+}
+
 
 app.Run();
