@@ -15,17 +15,18 @@ public class GuidedJournalEntryController: ControllerBase
     {
      _guidedJournalEntryService = guidedJournalEntryService; 
     }
+
     [HttpGet("{id}")]
     public ActionResult<List<GuidedJournalEntry>> GetAllForUserId(int id)
     {   List<GuidedJournalEntry> entriesForUserId;
+
         try
         {
             entriesForUserId = _guidedJournalEntryService.GetAllForUserId(id); 
         }
-        
-        catch(Exception e)
+        catch(Exception)
         {
-            return new BadRequestObjectResult(e.Message); 
+            return new BadRequestResult(); 
         }
 
         if(entriesForUserId == null)
@@ -34,22 +35,19 @@ public class GuidedJournalEntryController: ControllerBase
       return entriesForUserId; 
     }
 
-    
-
     [HttpPost]
     public IActionResult Create(GuidedJournalEntry guidedJournalEntry)
     { 
      try
         {   
             _guidedJournalEntryService.Add(guidedJournalEntry); 
+            
             return CreatedAtAction(nameof(GetAllForUserId), new {id = guidedJournalEntry.Id}, guidedJournalEntry);
         }
-        catch(Exception e)
+        catch(Exception)
         {
-            return new BadRequestObjectResult(e.Message);
-        }
-        
-       
+            return new BadRequestResult();
+        } 
     }
 
     [HttpPut("{id}")]

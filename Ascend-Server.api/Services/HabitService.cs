@@ -30,9 +30,11 @@ public class HabitService:IHabitService
 
     public void Add(Habit habit)
     {
+
         CheckUserId(habit.UserId); 
 
         var habitsForUser = _apiContext.Habits.Where(h => h.UserId == habit.UserId && h.Uuid == habit.Uuid);
+
         
         if(habitsForUser.Any())
         {

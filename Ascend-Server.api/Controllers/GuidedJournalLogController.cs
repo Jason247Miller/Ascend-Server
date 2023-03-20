@@ -1,7 +1,8 @@
-using Models; 
-using Exceptions; 
+using Models;
+using Exceptions;
 using Microsoft.AspNetCore.Mvc;
-namespace Controllers; 
+
+namespace Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -14,64 +15,65 @@ public class GuidedJournalLogController : ControllerBase
         _guidedJournalLogService = guidedJournalLogService;
     }
 
-[HttpGet("{id}")]
-public ActionResult<List<GuidedJournalLog>> GetAllForUserId(int id)
-{   
-    List<GuidedJournalLog> guidedJournalLogsForUserId;
-    try
+    [HttpGet("{id}")]
+    public ActionResult<List<GuidedJournalLog>> GetAllForUserId(int id)
     {
-        guidedJournalLogsForUserId = _guidedJournalLogService.GetAllForUserId(id); 
-    }
-    catch(Exception e)
-    {
-        return new BadRequestObjectResult(e.Message); 
-    }
+        List<GuidedJournalLog> guidedJournalLogsForUserId;
 
-    if(guidedJournalLogsForUserId == null)
-        return NotFound(); 
-
-    return guidedJournalLogsForUserId; 
-}
-
-[HttpPost]
-public IActionResult Create(GuidedJournalLog guidedJournalLog)
-{ 
-    try
-    {   
-    _guidedJournalLogService.Add(guidedJournalLog); 
-
-        return CreatedAtAction(nameof(GetAllForUserId), new {id = guidedJournalLog.Id}, guidedJournalLog);
-    }
-    catch(UserDoesNotExistException e)
-    {
-        return new BadRequestObjectResult(e.Message);
-    }
-    catch(HabitNotFoundException e)
-    {
-       return new BadRequestObjectResult(e.Message);
-    }
-    catch(Exception)
-    {
-       return new BadRequestResult();
-    }
-}
-
-[HttpPut("{id}")]
-    public IActionResult Update(int id, GuidedJournalLog guidedJournalLog)
-    {  
         try
-        { 
-            _guidedJournalLogService.Update(guidedJournalLog); 
-            
-            return NoContent(); 
+        {
+            guidedJournalLogsForUserId = _guidedJournalLogService.GetAllForUserId(id);
         }
-        catch(NotFoundException e )
-        {  
+        catch (Exception)
+        {
+            return new BadRequestResult();
+        }
+
+        if (guidedJournalLogsForUserId == null)
+            return NotFound();
+
+        return guidedJournalLogsForUserId;
+    }
+
+    [HttpPost]
+    public IActionResult Create(GuidedJournalLog guidedJournalLog)
+    {
+        try
+        {
+            _guidedJournalLogService.Add(guidedJournalLog);
+
+            return CreatedAtAction(nameof(GetAllForUserId), new { id = guidedJournalLog.Id }, guidedJournalLog);
+        }
+        catch (UserDoesNotExistException e)
+        {
             return new BadRequestObjectResult(e.Message);
         }
-        catch(Exception)
+        catch (HabitNotFoundException e)
         {
-            return new BadRequestResult(); 
+            return new BadRequestObjectResult(e.Message);
+        }
+        catch (Exception)
+        {
+            return new BadRequestResult();
+        }
+    }
+
+    [HttpPut("{id}")]
+    public IActionResult Update(int id, GuidedJournalLog guidedJournalLog)
+    {
+        try
+        {
+            _guidedJournalLogService.Update(guidedJournalLog);
+
+            return NoContent();
+        }
+        catch (NotFoundException e)
+        {
+            return new BadRequestObjectResult(e.Message);
+        }
+        catch (Exception)
+        {
+            return new BadRequestResult();
         }
     }
 

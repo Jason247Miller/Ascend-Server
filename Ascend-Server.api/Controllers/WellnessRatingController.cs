@@ -1,84 +1,87 @@
-using Models; 
-using Services; 
-using Exceptions; 
+using Models;
+using Services;
+using Exceptions;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Controllers; 
+namespace Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class WellnessRatingController: ControllerBase
-{ 
+public class WellnessRatingController : ControllerBase
+{
     private readonly IWellnessRatingService _wellnessRatingService;
+
     public WellnessRatingController(IWellnessRatingService wellnessRatingService)
     {
-     _wellnessRatingService = wellnessRatingService; 
+        _wellnessRatingService = wellnessRatingService;
     }
-     
+
     [HttpGet("{id}")]
     public ActionResult<List<WellnessRating>> GetAllForUserId(int id)
     {
         List<WellnessRating> wellnessRatingsForUserId;
+
         try
         {
-          wellnessRatingsForUserId = _wellnessRatingService.GetAllForUserId(id);
+            wellnessRatingsForUserId = _wellnessRatingService.GetAllForUserId(id);
         }
-        catch(UserDoesNotExistException e)
+        catch (UserDoesNotExistException e)
         {
             return new BadRequestObjectResult(e.Message);
         }
-        catch(Exception)
+        catch (Exception)
         {
-          return new BadRequestResult();
+            return new BadRequestResult();
         }
-        
-        if(wellnessRatingsForUserId == null)
-            return NotFound(); 
 
-        return wellnessRatingsForUserId; 
+        if (wellnessRatingsForUserId == null)
+            return NotFound();
+
+        return wellnessRatingsForUserId;
     }
 
     [HttpPost]
     public IActionResult Create(WellnessRating wellnessRating)
-    {   
+    {
         try
-        {   
-            _wellnessRatingService.Add(wellnessRating); 
-            return CreatedAtAction(nameof(GetAllForUserId), new {id = wellnessRating.Id}, wellnessRating);
+        {
+            _wellnessRatingService.Add(wellnessRating);
+
+            return CreatedAtAction(nameof(GetAllForUserId), new { id = wellnessRating.Id }, wellnessRating);
         }
-        catch(DuplicateWellnessRatingException e)
+        catch (DuplicateWellnessRatingException e)
         {
             return new BadRequestObjectResult(e.Message);
         }
-        catch(UserDoesNotExistException e)
+        catch (UserDoesNotExistException e)
         {
-            return new BadRequestObjectResult(e.Message); 
+            return new BadRequestObjectResult(e.Message);
         }
-        catch(Exception)
+        catch (Exception)
         {
-            return new BadRequestResult(); 
+            return new BadRequestResult();
         }
-        
+
     }
-        
-    
+
+
     [HttpPut("{id}")]
     public IActionResult Update(int id, WellnessRating wellnessRating)
-    {  
+    {
         try
-        { 
-            _wellnessRatingService.Update(wellnessRating); 
-            
-            return NoContent(); 
+        {
+            _wellnessRatingService.Update(wellnessRating);
+
+            return NoContent();
         }
-        catch(NotFoundException e )
-        {  
+        catch (NotFoundException e)
+        {
             return new BadRequestObjectResult(e.Message);
         }
-        catch(Exception)
+        catch (Exception)
         {
-            return new BadRequestResult(); 
+            return new BadRequestResult();
         }
     }
-  
+
 }

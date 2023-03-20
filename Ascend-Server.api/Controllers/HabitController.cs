@@ -15,8 +15,10 @@ public class HabitController: ControllerBase
     {
      _habitService = habitService; 
     }
+
     [HttpGet("{id}")]
     public ActionResult<List<Habit>> GetAllForUserId(int id)
+
     {   List<Habit> habitsForUserId;
 
         try
@@ -24,9 +26,10 @@ public class HabitController: ControllerBase
             habitsForUserId = _habitService.GetAllForUserId(id); 
         }
         
+
         catch(UserDoesNotExistException e)
         {
-            return new BadRequestObjectResult(e.Message); 
+            return new BadRequestResult(); 
         }
         catch(Exception)
         {
@@ -48,12 +51,11 @@ public class HabitController: ControllerBase
             _habitService.Add(habit); 
             return CreatedAtAction(nameof(GetAllForUserId), new {id = habit.Id}, habit);
         }
-        catch(Exception e)
+        catch(Exception)
         {
-            return new BadRequestObjectResult(e.Message);
+            return new BadRequestResult();
         }
         
-       
     }
 
     [HttpPut("{id}")]
