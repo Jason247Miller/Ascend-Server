@@ -9,7 +9,7 @@ public interface IUserService
     void Delete(User user); 
     User? CheckUser(int id); 
     User? FindUserByEmail(string email);
-    void VerifyPassword(User user, string password);  
+    bool VerifyPassword(User user, string password);  
 
 
 }

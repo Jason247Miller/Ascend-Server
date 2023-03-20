@@ -24,9 +24,9 @@ public class GuidedJournalEntryController: ControllerBase
         {
             entriesForUserId = _guidedJournalEntryService.GetAllForUserId(id); 
         }
-        catch(Exception e)
+        catch(Exception)
         {
-            return new BadRequestObjectResult(e.Message); 
+            return new BadRequestResult(); 
         }
 
         if(entriesForUserId == null)
@@ -44,9 +44,9 @@ public class GuidedJournalEntryController: ControllerBase
             
             return CreatedAtAction(nameof(GetAllForUserId), new {id = guidedJournalEntry.Id}, guidedJournalEntry);
         }
-        catch(Exception e)
+        catch(Exception)
         {
-            return new BadRequestObjectResult(e.Message);
+            return new BadRequestResult();
         } 
     }
 

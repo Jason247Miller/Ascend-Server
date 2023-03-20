@@ -22,9 +22,9 @@ public ActionResult<List<HabitCompletionLog>> GetAllForUserId(int id)
     {
         habitCompletionLogsForUserId = _habitCompletionLogService.GetAllForUserId(id); 
     }
-    catch(Exception e)
+    catch(Exception)
     {
-        return new BadRequestObjectResult(e.Message); 
+        return new BadRequestResult(); 
     }
 
     if(habitCompletionLogsForUserId == null)
