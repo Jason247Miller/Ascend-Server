@@ -58,7 +58,7 @@ public class WellnessRatingService:IWellnessRatingService
     {   
         if(_userService.CheckUser(wellnessRating.UserId) == null)
         {
-         throw new UserDoesNotExistException(wellnessRating.UserId);  
+         throw new UserDoesNotExistException();  
         }
         var existsForSameDate = WellnessRatings.Where(wr => wr.UserId == wellnessRating.UserId && wr.Date == wellnessRating.Date);
         
@@ -75,7 +75,7 @@ public class WellnessRatingService:IWellnessRatingService
     {
       if(_userService.CheckUser(userId) == null)
       {
-         throw new UserDoesNotExistException(userId);  
+         throw new UserDoesNotExistException();  
       }
 
       List<WellnessRating> userWellnessRatings = WellnessRatings.Where(r => r.UserId == userId).ToList();

@@ -57,7 +57,7 @@ public class GuidedJournalLogService:IGuidedJournalLogService
     {
          if(_userService.CheckUser(guidedJournalLog.UserId) == null)
         {
-         throw new UserDoesNotExistException(guidedJournalLog.UserId);  
+         throw new UserDoesNotExistException();  
         }
        var journalLogFound = _guidedJournalEntryService.EntryExistsAndNotDeleted(guidedJournalLog.EntryId, guidedJournalLog.UserId);
        

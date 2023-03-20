@@ -57,14 +57,14 @@ public class HabitCompletionLogService:IHabitCompletionLogService
     {
          if(_userService.CheckUser(habitCompletionLog.UserId) == null)
         {
-         throw new UserDoesNotExistException(habitCompletionLog.UserId);  
+         throw new UserDoesNotExistException();  
         }
-       var habitFound = _habitService.HabitExistsAndNotDeleted(habitCompletionLog.HabitId, habitCompletionLog.UserId);
+       //var habitFound = _habitService.HabitExistsAndNotDeleted(habitCompletionLog.HabitId, habitCompletionLog.UserId);
        
-       if(!habitFound)
-       {
-        throw new HabitNotFoundException();
-       }
+      // if(!habitFound)
+      // {
+      //  throw new HabitNotFoundException();
+      // }
         
         habitCompletionLog.Id = nextId++;
         HabitCompletionLogs.Add(habitCompletionLog);

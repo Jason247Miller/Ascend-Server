@@ -48,7 +48,7 @@ public class GuidedJournalEntryService:IGuidedJournalEntryService
     {
          if(_userService.CheckUser(guidedJournalEntry.UserId) == null)
         {
-         throw new UserDoesNotExistException(guidedJournalEntry.UserId);  
+         throw new UserDoesNotExistException();  
         }
         var entriesForUser = GuidedJournalEntries.Where(gje => gje.UserId == guidedJournalEntry.UserId && gje.Uuid == gje.Uuid);
         

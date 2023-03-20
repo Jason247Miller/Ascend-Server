@@ -24,9 +24,13 @@ public class HabitController: ControllerBase
             habitsForUserId = _habitService.GetAllForUserId(id); 
         }
         
-        catch(Exception e)
+        catch(UserDoesNotExistException e)
         {
             return new BadRequestObjectResult(e.Message); 
+        }
+        catch(Exception)
+        {
+            return new BadRequestResult();
         }
 
         if(habitsForUserId == null)
@@ -36,7 +40,6 @@ public class HabitController: ControllerBase
     }
 
     
-
     [HttpPost]
     public IActionResult Create(Habit habit)
     { 
@@ -62,7 +65,7 @@ public class HabitController: ControllerBase
             
             return NoContent(); 
         }
-        catch(NotFoundException e )
+        catch(HabitNotFoundException e )
         {  
             return new BadRequestObjectResult(e.Message);
         }

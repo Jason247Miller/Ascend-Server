@@ -4,12 +4,7 @@ namespace Exceptions;
 
     public class UserDoesNotExistException : Exception
     {
-        private readonly int _userId;
 
-        public override string Message => $"Error: User Id: '{_userId}' is Invalid.";
+        public override string Message => "Error: Invalid User Id";
 
-        public UserDoesNotExistException(int userId)
-        {
-            _userId = userId;
-        }
     }
