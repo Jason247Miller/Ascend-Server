@@ -1,8 +1,10 @@
 using System.ComponentModel.DataAnnotations;
+
 namespace Models; 
 
 public class User
-{   [Key]
+{ 
+    [Key]
     public int Id {get; set;}
     [Required]
     public string? FirstName {get; set;}
@@ -15,4 +17,5 @@ public class User
     [RegularExpression(@"^(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.*[0-9])(?=.*[a-z]).{8,}$", 
         ErrorMessage = "The password must contain at least one uppercase letter, one lowercase letter, one digit, one special character, and must be at least 8 characters long.")]
     public string? Password {get; set;}
+
 }

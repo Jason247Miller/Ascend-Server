@@ -49,7 +49,7 @@ public class WellnessRatingController : ControllerBase
 
             return CreatedAtAction(nameof(GetAllForUserId), new { id = wellnessRating.Id }, wellnessRating);
         }
-        catch (DuplicateWellnessRatingException e)
+        catch (SameDateException e)
         {
             return new BadRequestObjectResult(e.Message);
         }
@@ -70,7 +70,7 @@ public class WellnessRatingController : ControllerBase
     {
         try
         {
-            _wellnessRatingService.Update(wellnessRating);
+          //  _wellnessRatingService.Update(wellnessRating);
 
             return NoContent();
         }

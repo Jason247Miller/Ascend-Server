@@ -1,71 +1,76 @@
-using Models; 
-using Services; 
-using Exceptions; 
+using Models;
+using Services;
+using Exceptions;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Controllers; 
+namespace Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class GuidedJournalEntryController: ControllerBase
-{ 
+public class GuidedJournalEntryController : ControllerBase
+{
     private readonly IGuidedJournalEntryService _guidedJournalEntryService;
 
     public GuidedJournalEntryController(IGuidedJournalEntryService guidedJournalEntryService)
     {
-     _guidedJournalEntryService = guidedJournalEntryService; 
+        _guidedJournalEntryService = guidedJournalEntryService;
     }
 
     [HttpGet("{id}")]
     public ActionResult<List<GuidedJournalEntry>> GetAllForUserId(int id)
-    {   List<GuidedJournalEntry> entriesForUserId;
+    {
+        List<GuidedJournalEntry> entriesForUserId;
 
         try
         {
-            entriesForUserId = _guidedJournalEntryService.GetAllForUserId(id); 
+            entriesForUserId = _guidedJournalEntryService.GetAllForUserId(id);
         }
-        catch(Exception)
+        catch (Exception)
         {
-            return new BadRequestResult(); 
+            return new BadRequestResult();
         }
 
-        if(entriesForUserId == null)
-            return NotFound(); 
+        if (entriesForUserId == null)
+            return NotFound();
 
-      return entriesForUserId; 
+        return entriesForUserId;
     }
 
     [HttpPost]
     public IActionResult Create(GuidedJournalEntry guidedJournalEntry)
-    { 
-     try
-        {   
-            _guidedJournalEntryService.Add(guidedJournalEntry); 
-            
-            return CreatedAtAction(nameof(GetAllForUserId), new {id = guidedJournalEntry.Id}, guidedJournalEntry);
+    {
+        try
+        {
+            _guidedJournalEntryService.Add(guidedJournalEntry);
+
+            return CreatedAtAction(nameof(GetAllForUserId), new { id = guidedJournalEntry.Id }, guidedJournalEntry);
         }
-        catch(Exception)
+        catch (DuplicateEntryException e)
+        {
+            return new BadRequestObjectResult(e.Message);
+        }
+        catch (Exception)
         {
             return new BadRequestResult();
-        } 
+        }
     }
 
     [HttpPut("{id}")]
     public IActionResult Update(int id, GuidedJournalEntry guidedJournalEntry)
-    {  
+    {
         try
-        { 
-            _guidedJournalEntryService.Update(guidedJournalEntry); 
-            
-            return NoContent(); 
+        {
+            _guidedJournalEntryService.Update(guidedJournalEntry);
+
+            return NoContent();
         }
-        catch(NotFoundException e)
-        {  
+        catch (NotFoundException e)
+        {
             return new BadRequestObjectResult(e.Message);
         }
-        catch(Exception)
+        catch (Exception)
         {
-            return new BadRequestResult(); 
+            return new BadRequestResult();
         }
     }
 

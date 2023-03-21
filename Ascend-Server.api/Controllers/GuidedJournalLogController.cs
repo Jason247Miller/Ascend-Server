@@ -48,7 +48,11 @@ public class GuidedJournalLogController : ControllerBase
         {
             return new BadRequestObjectResult(e.Message);
         }
-        catch (HabitNotFoundException e)
+        catch(SameDateException e)
+        {
+            return new BadRequestObjectResult(e.Message);
+        }
+        catch (NotFoundException e)
         {
             return new BadRequestObjectResult(e.Message);
         }

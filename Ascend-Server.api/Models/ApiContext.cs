@@ -1,6 +1,5 @@
-﻿
+﻿using Microsoft.EntityFrameworkCore;
 
-using Microsoft.EntityFrameworkCore;
 namespace Models;
 
 public class ApiContext : DbContext
@@ -22,7 +21,6 @@ public class ApiContext : DbContext
         {
             var context = scope.ServiceProvider.GetRequiredService<ApiContext>();
 
-            //seed data below
             Users.AddRange(new List<User>
          {
             new User

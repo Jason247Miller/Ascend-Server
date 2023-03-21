@@ -4,5 +4,5 @@
     {      
         List<HabitCompletionLog> GetAllForUserId(int userId);
         void Add (HabitCompletionLog habitCompletionLog); 
-        void Update(HabitCompletionLog habitCompletionLog);
+        void Update(HabitCompletionLog habitCompletionLogPassed);
     }

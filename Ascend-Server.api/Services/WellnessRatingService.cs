@@ -1,104 +1,79 @@
-using Models; 
-using Exceptions; 
+using Models;
+using Exceptions;
 using System;
-using Services; 
-namespace Services; 
+using Services;
 
-public class WellnessRatingService:IWellnessRatingService
+namespace Services;
+
+public class WellnessRatingService : IWellnessRatingService
 {
-     List<WellnessRating> WellnessRatings { get; }
-     int nextId = 3;
-     private readonly IUserService _userService; 
-     public WellnessRatingService(IUserService userService)
+
+    private readonly IUserService _userService;
+
+    private readonly ApiContext _apiContext;
+
+    public WellnessRatingService(IUserService userService,
+                                 ApiContext apiContext)
     {
-        _userService = userService; 
-        WellnessRatings = new List<WellnessRating>
+        _userService = userService;
+
+        _apiContext = apiContext;
+    }
+
+    public void Add(WellnessRating wellnessRatingPassed)
+    {
+        _userService.CheckUserId(wellnessRatingPassed.UserId);
+
+        var existsForSameDate = _apiContext.WellnessRatings.Where(wr => wr.UserId == wellnessRatingPassed.UserId && wr.Date == wellnessRatingPassed.Date);
+
+        if (existsForSameDate.Any())
         {
-            new WellnessRating {
-                Id = 1,
-                UserId = 1,
-                Date =  new DateOnly(2023, 3, 16),
-                SleepRating = 7, 
-                ExerciseRating = 5, 
-                NutritionRating = 2, 
-                StressRating = 9, 
-                SunlightRating = 4, 
-                MindfulnessRating = 2, 
-                ProductivityRating = 9, 
-                MoodRating = 9, 
-                EnergyRating = 9, 
-                OverallDayRating = 4
-            },
-
-            new WellnessRating {
-                Id = 2,
-                UserId = 2,
-                Date =  new DateOnly(2023, 3, 16),
-                SleepRating = 7, 
-                ExerciseRating = 5, 
-                NutritionRating = 2, 
-                StressRating = 9, 
-                SunlightRating = 4, 
-                MindfulnessRating = 2, 
-                ProductivityRating = 9, 
-                MoodRating = 9, 
-                EnergyRating = 9, 
-                OverallDayRating = 4
-            }
-
-         
-        };
-    }
-
-    public List<WellnessRating> GetAll() => WellnessRatings;
-   
-    public WellnessRating? Get(int id) => WellnessRatings.FirstOrDefault(wr => wr.Id == id);
-
-    public void Add(WellnessRating wellnessRating)
-    {   
-        if(_userService.CheckUser(wellnessRating.UserId) == null)
-        {
-         throw new UserDoesNotExistException();  
+            throw new SameDateException("Wellness Rating", wellnessRatingPassed.Date.ToString() ?? "");
         }
-        var existsForSameDate = WellnessRatings.Where(wr => wr.UserId == wellnessRating.UserId && wr.Date == wellnessRating.Date);
-        
-        if(existsForSameDate.Any())
-        {   
-            throw new DuplicateWellnessRatingException(wellnessRating.Date);
-        }
-       
-        wellnessRating.Id = nextId++;
-        WellnessRatings.Add(wellnessRating);
+
+        _apiContext.WellnessRatings.Add(wellnessRatingPassed);
+
+        _apiContext.SaveChanges();
     }
 
-     public  List<WellnessRating> GetAllForUserId(int userId)
+    public List<WellnessRating> GetAllForUserId(int userId)
     {
-      if(_userService.CheckUser(userId) == null)
-      {
-         throw new UserDoesNotExistException();  
-      }
+        _userService.CheckUserId(userId);
 
-      List<WellnessRating> userWellnessRatings = WellnessRatings.Where(r => r.UserId == userId).ToList();
-      return userWellnessRatings; 
+        List<WellnessRating> userWellnessRatings = _apiContext.WellnessRatings.Where(r => r.UserId == userId).ToList();
+
+        return userWellnessRatings;
     }
 
-    public  void Update(WellnessRating wellnessRating)
+    public void Update(WellnessRating wellnessRatingPassed)
     {
-        var index = WellnessRatings.FindIndex(
-            wr => wr.Id == wellnessRating.Id &&
-            wr.UserId == wellnessRating.UserId
+        _userService.CheckUserId(wellnessRatingPassed.UserId);
+
+        var existingRating = _apiContext.WellnessRatings.FirstOrDefault(
+            wr => wr.Id == wellnessRatingPassed.Id &&
+            wr.UserId == wellnessRatingPassed.UserId
             );
-       
-        if(index == -1)
-        {  
-            throw new NotFoundException(wellnessRating); 
+
+        if (existingRating == null)
+        {
+            throw new NotFoundException("Wellness Rating");
         }
         else
         {
-            WellnessRatings[index] = wellnessRating;
-        }
-     
-    }
+            existingRating.SleepRating = wellnessRatingPassed.SleepRating;
+            existingRating.ExerciseRating = wellnessRatingPassed.ExerciseRating;
+            existingRating.NutritionRating = wellnessRatingPassed.NutritionRating;
+            existingRating.StressRating = wellnessRatingPassed.StressRating;
+            existingRating.SunlightRating = wellnessRatingPassed.SunlightRating;
+            existingRating.MindfulnessRating = wellnessRatingPassed.MindfulnessRating;
+            existingRating.ProductivityRating = wellnessRatingPassed.ProductivityRating;
+            existingRating.MoodRating = wellnessRatingPassed.MoodRating;
+            existingRating.EnergyRating = wellnessRatingPassed.EnergyRating;
+            existingRating.OverallDayRating = wellnessRatingPassed.OverallDayRating;
 
+            _apiContext.SaveChanges();
+        }
+
+    }
 
 }

@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations; 
+
 namespace Models; 
 
 public class WellnessRating
@@ -29,4 +30,5 @@ public class WellnessRating
     public int EnergyRating {get; set;}
     [Range(1,10)]
     public int OverallDayRating {get; set;}
+
 }

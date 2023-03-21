@@ -4,12 +4,12 @@ namespace Exceptions;
 
     public class NotFoundException : Exception
     {
-        private readonly object _item;
+        private readonly string _entity;
 
-        public override string Message => $"{_item}' does not exists.";
+        public override string Message => $"{_entity}' does not exists.";
 
-        public NotFoundException(object item)
+        public NotFoundException(string entity)
         {
-            _item = item;
+            _entity = entity;
         }
     }
