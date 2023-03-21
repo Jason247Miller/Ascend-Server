@@ -20,7 +20,7 @@ public class HabitCompletionLogService : IHabitCompletionLogService
 
     }
 
-    public List<HabitCompletionLog> GetAllForUserId(int userId)
+    public List<HabitCompletionLog> GetAllForUserId(Guid userId)
     {
         _userService.CheckUserId(userId);
 
@@ -33,7 +33,7 @@ public class HabitCompletionLogService : IHabitCompletionLogService
     {
         _userService.CheckUserId(habitCompletionLogPassed.UserId);
 
-        var habitForLog = _apiContext.Habits.FirstOrDefault(h => h.Uuid == habitCompletionLogPassed.HabitId &&
+        var habitForLog = _apiContext.Habits.FirstOrDefault(h => h.Id == habitCompletionLogPassed.HabitId &&
                                                                                  h.Deleted == false &&
                                                                                  h.UserId == habitCompletionLogPassed.UserId);
         if (habitForLog == null)

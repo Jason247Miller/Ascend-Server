@@ -16,7 +16,7 @@ public class HabitCompletionLogController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public ActionResult<List<HabitCompletionLog>> GetAllForUserId(int id)
+    public ActionResult<List<HabitCompletionLog>> GetAllForUserId(Guid id)
     {
         List<HabitCompletionLog> habitCompletionLogsForUserId;
         try
@@ -62,7 +62,7 @@ public class HabitCompletionLogController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public IActionResult Update(int id, HabitCompletionLog habitCompletionLog)
+    public IActionResult Update(Guid id, HabitCompletionLog habitCompletionLog)
     {
         try
         {

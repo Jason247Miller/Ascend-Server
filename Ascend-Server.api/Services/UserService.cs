@@ -13,7 +13,7 @@ public class UserService : IUserService
         _apiContext = apiContext;
     }
 
-    public User? Get(int id) => _apiContext.Users.FirstOrDefault(u => u.Id == id);
+    public User? Get(Guid id) => _apiContext.Users.FirstOrDefault(u => u.Id == id);
 
     public void Add(User userPassed)
     {
@@ -81,7 +81,7 @@ public class UserService : IUserService
         }
         return true;
     }
-    public void CheckUserId(int userIdPassed)
+    public void CheckUserId(Guid userIdPassed)
     {
         var userId = _apiContext.Users.SingleOrDefault(u => u.Id == userIdPassed);
 

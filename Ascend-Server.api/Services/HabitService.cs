@@ -20,7 +20,7 @@ public class HabitService : IHabitService
         _userService = userService;
     }
 
-    public List<Habit> GetAllForUserId(int userIdPassed)
+    public List<Habit> GetAllForUserId(Guid userIdPassed)
     {
 
         _userService.CheckUserId(userIdPassed);
@@ -35,7 +35,7 @@ public class HabitService : IHabitService
 
         _userService.CheckUserId(habit.UserId);
 
-        var habitsForUser = _apiContext.Habits.Where(h => h.UserId == habit.UserId && h.Uuid == habit.Uuid);
+        var habitsForUser = _apiContext.Habits.Where(h => h.UserId == habit.UserId && h.Id == habit.Id);
 
 
         if (habitsForUser.Any())

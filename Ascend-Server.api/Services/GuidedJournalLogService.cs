@@ -22,7 +22,7 @@ public class GuidedJournalLogService : IGuidedJournalLogService
         _userService = userService;
     }
 
-    public List<GuidedJournalLog> GetAllForUserId(int userId)
+    public List<GuidedJournalLog> GetAllForUserId(Guid userId)
     {
         _userService.CheckUserId(userId); 
         
@@ -35,7 +35,7 @@ public class GuidedJournalLogService : IGuidedJournalLogService
     {
         _userService.CheckUserId(guidedJournalLogPassed.UserId);
 
-        var journalEntryForLog = _apiContext.GuidedJournalEntries.FirstOrDefault(gje => gje.Uuid == guidedJournalLogPassed.EntryId &&
+        var journalEntryForLog = _apiContext.GuidedJournalEntries.FirstOrDefault(gje => gje.Id == guidedJournalLogPassed.EntryId &&
                                                                                  gje.Deleted == false &&
                                                                                  gje.UserId == guidedJournalLogPassed.UserId);
 

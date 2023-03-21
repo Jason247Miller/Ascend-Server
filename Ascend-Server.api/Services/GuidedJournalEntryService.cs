@@ -19,7 +19,7 @@ public class GuidedJournalEntryService : IGuidedJournalEntryService
         _userService = userService;
     }
 
-    public List<GuidedJournalEntry> GetAllForUserId(int userId)
+    public List<GuidedJournalEntry> GetAll(Guid userId)
     {
         _userService.CheckUserId(userId);
 
@@ -31,7 +31,7 @@ public class GuidedJournalEntryService : IGuidedJournalEntryService
     {
         _userService.CheckUserId(guidedJournalEntryPassed.UserId);
 
-        var entriesForUser = _apiContext.GuidedJournalEntries.Where(gje => gje.UserId == guidedJournalEntryPassed.UserId && gje.Uuid == gje.Uuid);
+        var entriesForUser = _apiContext.GuidedJournalEntries.Where(gje => gje.UserId == guidedJournalEntryPassed.UserId && gje.Id == gje.Id);
 
         if (entriesForUser.Any())
         {

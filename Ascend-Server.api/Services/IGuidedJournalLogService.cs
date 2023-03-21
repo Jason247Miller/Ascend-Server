@@ -2,7 +2,7 @@
 
   public interface IGuidedJournalLogService
     {      
-        List<GuidedJournalLog> GetAllForUserId(int userId);
+        List<GuidedJournalLog> GetAllForUserId(Guid userId);
         void Add (GuidedJournalLog guidedJournalLog); 
         void Update(GuidedJournalLog guidedJournalLog);
     }

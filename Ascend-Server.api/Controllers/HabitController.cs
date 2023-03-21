@@ -17,7 +17,7 @@ public class HabitController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public ActionResult<List<Habit>> GetAllForUserId(int id)
+    public ActionResult<List<Habit>> GetAllForUserId(Guid id)
     {
         List<Habit> habitsForUserId;
 
@@ -57,7 +57,7 @@ public class HabitController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public IActionResult Update(int id, Habit habit)
+    public IActionResult Update(Guid id, Habit habit)
     {
         try
         {

@@ -25,7 +25,7 @@ public class ApiContext : DbContext
          {
             new User
             {
-                Id = 1,
+                Id = Guid.Parse("f2d1b702-c81a-11ed-afa1-0242ac120002"),
                 FirstName = "Jason",
                 LastName = "Miller",
                 Email = "jason.miller@gmail.com",
@@ -37,8 +37,8 @@ public class ApiContext : DbContext
         {
             new WellnessRating
             {
-                Id = 1,
-                UserId = 1,
+                Id = Guid.Parse("348b40fa-c81b-11ed-afa1-0242ac120002"),
+                UserId = Guid.Parse("f2d1b702-c81a-11ed-afa1-0242ac120002"),
                 Date =  new DateOnly(2023, 3, 16),
                 SleepRating = 7,
                 ExerciseRating = 5,
@@ -57,19 +57,17 @@ public class ApiContext : DbContext
         {
             new GuidedJournalEntry
             {
-                Id = 1,
-                UserId = 1,
+                Id = Guid.Parse("48268692-c81b-11ed-afa1-0242ac120002"),
+                UserId = Guid.Parse("f2d1b702-c81a-11ed-afa1-0242ac120002"),
                 EntryName = "What are you most greatful for?",
-                Uuid = "2e2bd1d4-c4a3-475a-bc8a-5aea1156e0ec",
                 Deleted = false
             },
 
           new GuidedJournalEntry
           {
-            Id = 2,
-            UserId = 1,
+            Id = Guid.Parse("2102282c-c81c-11ed-afa1-0242ac120002"),
+            UserId = Guid.Parse("f2d1b702-c81a-11ed-afa1-0242ac120002"),
             EntryName = "What did you learn today?",
-            Uuid = "d58a9560-3ed8-4eaa-b97e-c558179861e9",
             Deleted = false
           }
         });
@@ -77,37 +75,35 @@ public class ApiContext : DbContext
             Habits.AddRange(new List<Habit>
         {
          new Habit {
-                Id = 1,
-                UserId = 1,
+                Id = Guid.Parse("e58a9560-3ed8-4eaa-b97e-c958179961e2"),
+                UserId = Guid.Parse("f2d1b702-c81a-11ed-afa1-0242ac120002"),
                 HabitName = "20 minutes of cardio",
-                Uuid = "d58a9560-3ed8-4eaa-b97e-c558179861e8",
                 Deleted = false
         },
 
         new Habit
         {
-            Id = 2,
-            UserId = 1,
+            Id = Guid.Parse("e58a9560-3ed8-4eaa-b97e-c958179961e3"),
+            UserId = Guid.Parse("f2d1b702-c81a-11ed-afa1-0242ac120002"),
             HabitName = "Learned 1 new thing",
-            Uuid = "2e2bd1d4-c4a3-475a-bc8a-5aea1156e0ec",
             Deleted = false
         }});
 
             HabitCompletionLogs.AddRange(new List<HabitCompletionLog>
         {
         new HabitCompletionLog {
-                Id = 1,
-                UserId = 1,
-                HabitId = "d58a9560-3ed8-4eaa-b97e-c558179861e8",
+                Id = Guid.Parse("d58a9560-8ed8-4eaa-b97e-c958179961e9"),
+                UserId = Guid.Parse("f2d1b702-c81a-11ed-afa1-0242ac120002"),
+                HabitId = Guid.Parse("e58a9560-3ed8-4eaa-b97e-c958179961e2"),
                 Completed = true,
                 Date = new DateOnly(2023, 3, 16)
             },
 
         new HabitCompletionLog
         {
-            Id = 2,
-            UserId = 1,
-            HabitId = "2e2bd1d4-c4a3-475a-bc8a-5aea1156e0ec",
+            Id = Guid.Parse("d58a9560-9ed8-4eaa-b97e-c958179961e9"),
+            UserId = Guid.Parse("f2d1b702-c81a-11ed-afa1-0242ac120002"),
+            HabitId = Guid.Parse("e58a9560-3ed8-4eaa-b97e-c958179961e3"),
             Completed = true,
             Date = new DateOnly(2023, 3, 16)
         }});
@@ -116,17 +112,17 @@ public class ApiContext : DbContext
         {
         new GuidedJournalLog
         {
-            Id = 1,
-            UserId = 1,
-            EntryId = "2e2bd1d4-c4a3-475a-bc8a-5aea1156e0ec",
+            Id = Guid.Parse("a58a9560-3ed8-4eaa-b97e-c958179961e9"),
+            UserId = Guid.Parse("f2d1b702-c81a-11ed-afa1-0242ac120002"),
+            EntryId = Guid.Parse("48268692-c81b-11ed-afa1-0242ac120002"),
             EntryTextValue = "text here",
             Date = new DateOnly(2023, 03, 16)
         },
         new GuidedJournalLog
         {
-            Id = 2,
-            UserId = 2,
-            EntryId = "d58a9560-3ed8-4eaa-b97e-c558179861e9",
+            Id = Guid.Parse("f58a9560-3ed8-4eaa-b97e-c958179961e9"),
+            UserId = Guid.Parse("f2d1b702-c81a-11ed-afa1-0242ac120002"),
+            EntryId = Guid.Parse("2102282c-c81c-11ed-afa1-0242ac120002"),
             EntryTextValue = "text here",
             Date = new DateOnly(2023, 03, 16)
         }});

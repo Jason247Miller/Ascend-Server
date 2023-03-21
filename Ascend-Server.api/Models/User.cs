@@ -5,7 +5,7 @@ namespace Models;
 public class User
 { 
     [Key]
-    public int Id {get; set;}
+    public Guid Id {get; set;}
     [Required]
     public string? FirstName {get; set;}
     [Required]

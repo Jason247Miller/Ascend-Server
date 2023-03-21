@@ -17,7 +17,7 @@ public class WellnessRatingController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public ActionResult<List<WellnessRating>> GetAllForUserId(int id)
+    public ActionResult<List<WellnessRating>> GetAllForUserId(Guid id)
     {
         List<WellnessRating> wellnessRatingsForUserId;
 
@@ -66,7 +66,7 @@ public class WellnessRatingController : ControllerBase
 
 
     [HttpPut("{id}")]
-    public IActionResult Update(int id, WellnessRating wellnessRating)
+    public IActionResult Update(Guid id, WellnessRating wellnessRating)
     {
         try
         {

@@ -36,7 +36,7 @@ public class WellnessRatingService : IWellnessRatingService
         _apiContext.SaveChanges();
     }
 
-    public List<WellnessRating> GetAllForUserId(int userId)
+    public List<WellnessRating> GetAllForUserId(Guid userId)
     {
         _userService.CheckUserId(userId);
 

@@ -7,33 +7,35 @@ namespace Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class GuidedJournalEntryController : ControllerBase
+public class GuidedJournalEntriesController : ControllerBase
 {
     private readonly IGuidedJournalEntryService _guidedJournalEntryService;
 
-    public GuidedJournalEntryController(IGuidedJournalEntryService guidedJournalEntryService)
+    public GuidedJournalEntriesController(IGuidedJournalEntryService guidedJournalEntryService)
     {
         _guidedJournalEntryService = guidedJournalEntryService;
     }
 
-    [HttpGet("{id}")]
-    public ActionResult<List<GuidedJournalEntry>> GetAllForUserId(int id)
+    [HttpGet]
+    public ActionResult<List<GuidedJournalEntry>> GetAllGuidedJournalEntries()
     {
-        List<GuidedJournalEntry> entriesForUserId;
+        List<GuidedJournalEntry> guidedJournalEntries;
+
+        Guid userId = Guid.Parse("f2d1b702-c81a-11ed-afa1-0242ac120002"); //will get from auth service later
 
         try
         {
-            entriesForUserId = _guidedJournalEntryService.GetAllForUserId(id);
+            guidedJournalEntries = _guidedJournalEntryService.GetAll(userId);
         }
         catch (Exception)
         {
             return new BadRequestResult();
         }
 
-        if (entriesForUserId == null)
-            return NotFound();
+        if (guidedJournalEntries == null)
+            return new List<GuidedJournalEntry>();
 
-        return entriesForUserId;
+        return guidedJournalEntries;
     }
 
     [HttpPost]
@@ -43,7 +45,7 @@ public class GuidedJournalEntryController : ControllerBase
         {
             _guidedJournalEntryService.Add(guidedJournalEntry);
 
-            return CreatedAtAction(nameof(GetAllForUserId), new { id = guidedJournalEntry.Id }, guidedJournalEntry);
+            return CreatedAtAction(nameof(GetAllGuidedJournalEntries), new { id = guidedJournalEntry.Id }, guidedJournalEntry);
         }
         catch (DuplicateEntryException e)
         {
@@ -56,7 +58,7 @@ public class GuidedJournalEntryController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public IActionResult Update(int id, GuidedJournalEntry guidedJournalEntry)
+    public IActionResult Update(Guid id, GuidedJournalEntry guidedJournalEntry)
     {
         try
         {

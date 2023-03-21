@@ -16,7 +16,7 @@ public class GuidedJournalLogController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public ActionResult<List<GuidedJournalLog>> GetAllForUserId(int id)
+    public ActionResult<List<GuidedJournalLog>> GetAllForUserId(Guid id)
     {
         List<GuidedJournalLog> guidedJournalLogsForUserId;
 
@@ -63,7 +63,7 @@ public class GuidedJournalLogController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public IActionResult Update(int id, GuidedJournalLog guidedJournalLog)
+    public IActionResult Update(Guid id, GuidedJournalLog guidedJournalLog)
     {
         try
         {

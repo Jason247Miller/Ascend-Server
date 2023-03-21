@@ -2,6 +2,6 @@ using Models;
 public interface IWellnessRatingService
 {
     void Add(WellnessRating wellnessRating);
-    List<WellnessRating> GetAllForUserId(int userId);
+    List<WellnessRating> GetAllForUserId(Guid userId);
     void Update(WellnessRating wellnessRating);
 }
