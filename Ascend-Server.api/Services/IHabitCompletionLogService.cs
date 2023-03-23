@@ -2,7 +2,7 @@
 
   public interface IHabitCompletionLogService
     {      
-        List<HabitCompletionLog> GetAllForUserId(Guid userId);
+        HabitCompletionLog[] GetAllForUserId(Guid userId);
         void Add (HabitCompletionLog habitCompletionLog); 
-        void Update(HabitCompletionLog habitCompletionLogPassed);
+        void Update(HabitCompletionLog habitCompletionLogPassed, Guid id);
     }

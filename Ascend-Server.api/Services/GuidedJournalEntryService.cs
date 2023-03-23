@@ -1,7 +1,7 @@
 using Models;
 using Exceptions;
-using System;
-using Services;
+
+
 namespace Services;
 
 public class GuidedJournalEntryService : IGuidedJournalEntryService
@@ -19,11 +19,12 @@ public class GuidedJournalEntryService : IGuidedJournalEntryService
         _userService = userService;
     }
 
-    public List<GuidedJournalEntry> GetAll(Guid userId)
+    public GuidedJournalEntry[] GetAllForUserId(Guid userId)
     {
         _userService.CheckUserId(userId);
 
-        List<GuidedJournalEntry> userEntries = _apiContext.GuidedJournalEntries.Where(gje => gje.UserId == userId).ToList();
+        var userEntries = _apiContext.GuidedJournalEntries.Where(gje => gje.UserId == userId).ToArray();
+
         return userEntries;
     }
 
@@ -43,9 +44,9 @@ public class GuidedJournalEntryService : IGuidedJournalEntryService
         _apiContext.SaveChanges();
     }
 
-    public void Update(GuidedJournalEntry guidedJournalEntryPassed)
+    public void Update(GuidedJournalEntry guidedJournalEntryPassed, Guid id)
     {
-        var existingJournalEntry = _apiContext.GuidedJournalEntries.FirstOrDefault(gje => gje.Id == guidedJournalEntryPassed.Id &&
+        var existingJournalEntry = _apiContext.GuidedJournalEntries.FirstOrDefault(gje => gje.Id == id &&
                                                                                    gje.UserId == guidedJournalEntryPassed.UserId);
 
         if (existingJournalEntry == null)

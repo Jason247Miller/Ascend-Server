@@ -20,12 +20,12 @@ public class HabitService : IHabitService
         _userService = userService;
     }
 
-    public List<Habit> GetAllForUserId(Guid userIdPassed)
+    public Habit[] GetAllForUserId(Guid userIdPassed)
     {
 
         _userService.CheckUserId(userIdPassed);
 
-        List<Habit> userHabits = _apiContext.Habits.Where(h => h.UserId == userIdPassed).ToList();
+        var userHabits = _apiContext.Habits.Where(h => h.UserId == userIdPassed).ToArray();
 
         return userHabits;
     }
@@ -46,9 +46,9 @@ public class HabitService : IHabitService
         _apiContext.Habits.Add(habit);
     }
 
-    public void Update(Habit habit)
+    public void Update(Habit habit, Guid id)
     {
-        var existingHabit = _apiContext.Habits.SingleOrDefault(h => h.Id == habit.Id &&
+        var existingHabit = _apiContext.Habits.SingleOrDefault(h => h.Id == id &&
                                                          h.UserId == habit.UserId);
 
         if (existingHabit == null)

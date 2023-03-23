@@ -36,21 +36,21 @@ public class WellnessRatingService : IWellnessRatingService
         _apiContext.SaveChanges();
     }
 
-    public List<WellnessRating> GetAllForUserId(Guid userId)
+    public WellnessRating[] GetAllForUserId(Guid userId)
     {
         _userService.CheckUserId(userId);
 
-        List<WellnessRating> userWellnessRatings = _apiContext.WellnessRatings.Where(r => r.UserId == userId).ToList();
+        var userWellnessRatings = _apiContext.WellnessRatings.Where(r => r.UserId == userId).ToArray();
 
         return userWellnessRatings;
     }
 
-    public void Update(WellnessRating wellnessRatingPassed)
+    public void Update(WellnessRating wellnessRatingPassed, Guid id)
     {
         _userService.CheckUserId(wellnessRatingPassed.UserId);
 
         var existingRating = _apiContext.WellnessRatings.FirstOrDefault(
-            wr => wr.Id == wellnessRatingPassed.Id &&
+            wr => wr.Id == id &&
             wr.UserId == wellnessRatingPassed.UserId
             );
 

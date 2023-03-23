@@ -2,7 +2,7 @@
 
   public interface IHabitService
     {      
-        List<Habit> GetAllForUserId(Guid userId);
+        Habit[] GetAllForUserId(Guid userId);
         void Add (Habit habit);
-        void Update(Habit habit);
+        void Update(Habit habit, Guid id);
     }

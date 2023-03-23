@@ -20,11 +20,11 @@ public class HabitCompletionLogService : IHabitCompletionLogService
 
     }
 
-    public List<HabitCompletionLog> GetAllForUserId(Guid userId)
+    public HabitCompletionLog[] GetAllForUserId(Guid userId)
     {
         _userService.CheckUserId(userId);
 
-        List<HabitCompletionLog> userHabitCompletionLogs = _apiContext.HabitCompletionLogs.Where(hcl => hcl.UserId == userId).ToList();
+        var userHabitCompletionLogs = _apiContext.HabitCompletionLogs.Where(hcl => hcl.UserId == userId).ToArray();
 
         return userHabitCompletionLogs;
     }
@@ -54,11 +54,11 @@ public class HabitCompletionLogService : IHabitCompletionLogService
         _apiContext.SaveChanges();
     }
 
-    public void Update(HabitCompletionLog habitCompletionLogPassed)
+    public void Update(HabitCompletionLog habitCompletionLogPassed, Guid id)
     {
 
         var existingHabitCompletionLog = _apiContext.HabitCompletionLogs.FirstOrDefault(
-            hcl => hcl.Id == habitCompletionLogPassed.Id &&
+            hcl => hcl.Id == id &&
             hcl.UserId == habitCompletionLogPassed.UserId
             );
 

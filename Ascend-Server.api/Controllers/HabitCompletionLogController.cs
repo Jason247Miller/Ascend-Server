@@ -1,6 +1,8 @@
-using Models;
 using Exceptions;
 using Microsoft.AspNetCore.Mvc;
+using AutoMapper;
+using Ascend_Server.api.Dto;
+using Models;
 
 namespace Controllers;
 
@@ -10,38 +12,49 @@ public class HabitCompletionLogController : ControllerBase
 {
     private readonly IHabitCompletionLogService _habitCompletionLogService;
 
-    public HabitCompletionLogController(IHabitCompletionLogService habitCompletionLogService)
+    private readonly IMapper _mapper;
+    public HabitCompletionLogController(IHabitCompletionLogService habitCompletionLogService,
+                                        IMapper mapper)
     {
         _habitCompletionLogService = habitCompletionLogService;
+
+        _mapper = mapper; 
     }
 
-    [HttpGet("{id}")]
-    public ActionResult<List<HabitCompletionLog>> GetAllForUserId(Guid id)
+    [HttpGet]
+    public IActionResult GetAll()
     {
-        List<HabitCompletionLog> habitCompletionLogsForUserId;
+        // will get from auth service later
+        Guid userId = Guid.Parse("f2d1b702-c81a-11ed-afa1-0242ac120002");
+
         try
         {
-            habitCompletionLogsForUserId = _habitCompletionLogService.GetAllForUserId(id);
+            var habitCompletionLogs = _habitCompletionLogService.GetAllForUserId(userId);
+
+            if (habitCompletionLogs == null)
+            {
+                return NotFound();
+            }
+            var dtos = _mapper.Map<Models.HabitCompletionLog[], Ascend_Server.api.Dto.HabitCompletionLog[]>(habitCompletionLogs);
+
+            return new OkObjectResult(dtos);
         }
         catch (Exception)
         {
             return new BadRequestResult();
         }
-
-        if (habitCompletionLogsForUserId == null)
-            return NotFound();
-
-        return habitCompletionLogsForUserId;
     }
 
     [HttpPost]
-    public IActionResult Create(HabitCompletionLog habitCompletionLog)
+    public IActionResult Create(HabitCompletionLogForCreation habitCompletionLogDto)
     {
         try
         {
-            _habitCompletionLogService.Add(habitCompletionLog);
+            var _habitCompletionLog = _mapper.Map<HabitCompletionLogForCreation, Models.HabitCompletionLog>(habitCompletionLogDto);
 
-            return CreatedAtAction(nameof(GetAllForUserId), new { id = habitCompletionLog.Id }, habitCompletionLog);
+            _habitCompletionLogService.Add(_habitCompletionLog);
+
+            return CreatedAtAction(nameof(GetAll), new { id = habitCompletionLogDto.Id }, habitCompletionLogDto);
         }
         catch (SameDateException e)
         {
@@ -62,11 +75,13 @@ public class HabitCompletionLogController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public IActionResult Update(Guid id, HabitCompletionLog habitCompletionLog)
+    public IActionResult Update(HabitCompletionLog habitCompletionLogDto, Guid id)
     {
         try
         {
-            _habitCompletionLogService.Update(habitCompletionLog);
+            var _habitCompletionLog = _mapper.Map<HabitCompletionLog, Models.HabitCompletionLog>(habitCompletionLogDto);
+
+            _habitCompletionLogService.Update(_habitCompletionLog, id);
 
             return NoContent();
         }

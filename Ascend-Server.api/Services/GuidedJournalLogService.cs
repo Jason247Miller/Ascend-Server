@@ -22,11 +22,11 @@ public class GuidedJournalLogService : IGuidedJournalLogService
         _userService = userService;
     }
 
-    public List<GuidedJournalLog> GetAllForUserId(Guid userId)
+    public GuidedJournalLog[] GetAllForUserId(Guid userId)
     {
         _userService.CheckUserId(userId); 
         
-        List<GuidedJournalLog> userGuidedJournalLogs = _apiContext.GuidedJournalLogs.Where(gjl => gjl.UserId == userId).ToList();
+        var userGuidedJournalLogs = _apiContext.GuidedJournalLogs.Where(gjl => gjl.UserId == userId).ToArray();
 
         return userGuidedJournalLogs;
     }
@@ -57,10 +57,10 @@ public class GuidedJournalLogService : IGuidedJournalLogService
         _apiContext.SaveChanges(); 
     }
 
-    public void Update(GuidedJournalLog guidedJournalLogPassed)
+    public void Update(GuidedJournalLog guidedJournalLogPassed, Guid id)
     {
 
-        var existingJournalLogPassed = _apiContext.GuidedJournalLogs.FirstOrDefault(gjl => gjl.Id == guidedJournalLogPassed.Id && gjl.UserId == guidedJournalLogPassed.UserId);
+        var existingJournalLogPassed = _apiContext.GuidedJournalLogs.FirstOrDefault(gjl => gjl.Id == id && gjl.UserId == guidedJournalLogPassed.UserId);
 
         if (existingJournalLogPassed == null)
         {

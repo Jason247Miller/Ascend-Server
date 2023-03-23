@@ -1,6 +1,8 @@
 using Models;
 using Exceptions;
 using Microsoft.AspNetCore.Mvc;
+using AutoMapper;
+using Ascend_Server.api.Dto;
 
 namespace Controllers;
 
@@ -10,39 +12,51 @@ public class GuidedJournalLogController : ControllerBase
 {
     private readonly IGuidedJournalLogService _guidedJournalLogService;
 
-    public GuidedJournalLogController(IGuidedJournalLogService guidedJournalLogService)
+    private readonly IMapper _mapper; 
+
+    public GuidedJournalLogController(IGuidedJournalLogService guidedJournalLogService, 
+                                      IMapper mapper)
     {
         _guidedJournalLogService = guidedJournalLogService;
+
+        _mapper = mapper; 
     }
 
-    [HttpGet("{id}")]
-    public ActionResult<List<GuidedJournalLog>> GetAllForUserId(Guid id)
+    [HttpGet]
+    public IActionResult GetAll()
     {
-        List<GuidedJournalLog> guidedJournalLogsForUserId;
+
+        // will get from auth service later
+        Guid userId = Guid.Parse("f2d1b702-c81a-11ed-afa1-0242ac120002");
 
         try
         {
-            guidedJournalLogsForUserId = _guidedJournalLogService.GetAllForUserId(id);
+            var guidedJournalLogs = _guidedJournalLogService.GetAllForUserId(userId);
+
+            if (guidedJournalLogs == null)
+            {
+                return NotFound();
+            }
+            var dtos = _mapper.Map<Models.GuidedJournalLog[], Ascend_Server.api.Dto.GuidedJournalLog[]>(guidedJournalLogs);
+
+            return new OkObjectResult(dtos);
         }
         catch (Exception)
         {
             return new BadRequestResult();
         }
-
-        if (guidedJournalLogsForUserId == null)
-            return NotFound();
-
-        return guidedJournalLogsForUserId;
     }
 
     [HttpPost]
-    public IActionResult Create(GuidedJournalLog guidedJournalLog)
+    public IActionResult Create(GuidedJournalLogForCreation guidedJournalLogDto)
     {
         try
         {
-            _guidedJournalLogService.Add(guidedJournalLog);
+            var _guidedJournalLog = _mapper.Map<GuidedJournalLogForCreation, Models.GuidedJournalLog>(guidedJournalLogDto);
 
-            return CreatedAtAction(nameof(GetAllForUserId), new { id = guidedJournalLog.Id }, guidedJournalLog);
+            _guidedJournalLogService.Add(_guidedJournalLog);
+
+            return CreatedAtAction(nameof(GetAll), new { id = guidedJournalLogDto.Id }, guidedJournalLogDto);
         }
         catch (UserDoesNotExistException e)
         {
@@ -63,11 +77,13 @@ public class GuidedJournalLogController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public IActionResult Update(Guid id, GuidedJournalLog guidedJournalLog)
+    public IActionResult Update(Ascend_Server.api.Dto.GuidedJournalLog guidedJournalLogDto, Guid id)
     {
         try
         {
-            _guidedJournalLogService.Update(guidedJournalLog);
+            var _guidedJournalLog = _mapper.Map<Ascend_Server.api.Dto.GuidedJournalLog, Models.GuidedJournalLog>(guidedJournalLogDto);
+
+            _guidedJournalLogService.Update(_guidedJournalLog, id);
 
             return NoContent();
         }

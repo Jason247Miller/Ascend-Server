@@ -2,8 +2,7 @@
 
   public interface IGuidedJournalEntryService
     {      
-        List<GuidedJournalEntry> GetAll(Guid userId);
+        GuidedJournalEntry[] GetAllForUserId(Guid userId);
         void Add(GuidedJournalEntry guidedJournalEntry);
-        void Update(GuidedJournalEntry guidedJournalEntry);
-       
+        void Update(GuidedJournalEntry guidedJournalEntry, Guid id);
     }
