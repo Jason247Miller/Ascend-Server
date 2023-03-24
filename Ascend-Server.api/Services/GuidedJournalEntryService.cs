@@ -1,12 +1,10 @@
 using Models;
 using Exceptions;
 
-
 namespace Services;
 
 public class GuidedJournalEntryService : IGuidedJournalEntryService
 {
-
     private readonly IUserService _userService;
 
     private readonly ApiContext _apiContext;
@@ -32,10 +30,11 @@ public class GuidedJournalEntryService : IGuidedJournalEntryService
     {
         _userService.CheckUserId(guidedJournalEntryPassed.UserId);
 
-        var entriesForUser = _apiContext.GuidedJournalEntries.Where(gje => gje.UserId == guidedJournalEntryPassed.UserId && gje.Id == gje.Id);
+        var entriesForUser = _apiContext.GuidedJournalEntries.FirstOrDefault(gje => gje.UserId == guidedJournalEntryPassed.UserId && gje.Id == gje.Id);
 
-        if (entriesForUser.Any())
+        if (entriesForUser == null)
         {
+            Console.WriteLine("duplicate entries");
             throw new DuplicateEntryException();
         }
 
@@ -63,6 +62,5 @@ public class GuidedJournalEntryService : IGuidedJournalEntryService
         }
 
     }
-
 
 }

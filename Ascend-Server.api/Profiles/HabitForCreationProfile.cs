@@ -1,5 +1,6 @@
 ﻿using Ascend_Server.api.Dto;
 using AutoMapper;
+using Models;
 
 namespace profiles;
 
@@ -7,7 +8,7 @@ public class HabitForCreationProfile : Profile
 {
     public HabitForCreationProfile()
     {
-        CreateMap<HabitForCreation, Models.Habit>()
+        CreateMap<Ascend_Server.api.Dto.HabitForCreation, Models.Habit>()
             .ForMember(
             h => h.Id,
             options => options.MapFrom(newId => Guid.NewGuid())
@@ -25,8 +26,8 @@ public class HabitForCreationProfile : Profile
             options => options.MapFrom(src => src.HabitName)
             )
             .ForMember(
-            h => h.HabitName,
-            options => options.MapFrom(src => src.HabitName)
+            h => h.CreationDate,
+            options => options.MapFrom(src => src.CreationDate)
             );
     }
 }

@@ -1,10 +1,11 @@
 using System;
-using Models; 
+using Models;
+
 namespace Exceptions;
 
-    public class UserDoesNotExistException : Exception
-    {
+public class UserDoesNotExistException : Exception
+{
 
-        public override string Message => "Error: Invalid User Id";
+    public override string Message => "Error: Invalid User Id";
 
-    }
+}

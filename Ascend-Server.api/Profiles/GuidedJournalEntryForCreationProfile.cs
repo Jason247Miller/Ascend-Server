@@ -1,17 +1,12 @@
 using Ascend_Server.api.Dto;
 using AutoMapper;
 
-
 namespace profiles;
 
 public class GuidedJournalEntryForCreationProfile : Profile
 {
     public GuidedJournalEntryForCreationProfile()
     {
-        //map from Dto to Model
-        //ForMember specifies how to map a destination member
-        //MapFrom Specifies the source to get the data from for the dest member
-        //options specifies how to perform the mapping
         CreateMap<GuidedJournalEntryForCreation, Models.GuidedJournalEntry>()
             .ForMember(
             gje => gje.Id,
@@ -26,10 +21,12 @@ public class GuidedJournalEntryForCreationProfile : Profile
             options => options.MapFrom(src => src.EntryName)
             )
             .ForMember(
-            gje => gje.Deleted, 
+            gje => gje.Deleted,
             options => options.MapFrom(src => src.Deleted)
+            )
+            .ForMember(
+            gje => gje.CreationDate,
+            options => options.MapFrom(src => src.CreationDate)
             );
-
     }
-            
 }

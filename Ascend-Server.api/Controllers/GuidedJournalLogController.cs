@@ -1,4 +1,3 @@
-using Models;
 using Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
@@ -12,14 +11,14 @@ public class GuidedJournalLogController : ControllerBase
 {
     private readonly IGuidedJournalLogService _guidedJournalLogService;
 
-    private readonly IMapper _mapper; 
+    private readonly IMapper _mapper;
 
-    public GuidedJournalLogController(IGuidedJournalLogService guidedJournalLogService, 
+    public GuidedJournalLogController(IGuidedJournalLogService guidedJournalLogService,
                                       IMapper mapper)
     {
         _guidedJournalLogService = guidedJournalLogService;
 
-        _mapper = mapper; 
+        _mapper = mapper;
     }
 
     [HttpGet]
@@ -56,13 +55,15 @@ public class GuidedJournalLogController : ControllerBase
 
             _guidedJournalLogService.Add(_guidedJournalLog);
 
+            var _guidedJournalLogDto = _mapper.Map<Models.GuidedJournalLog, Ascend_Server.api.Dto.GuidedJournalLog>(_guidedJournalLog);
+
             return CreatedAtAction(nameof(GetAll), new { id = guidedJournalLogDto.Id }, guidedJournalLogDto);
         }
         catch (UserDoesNotExistException e)
         {
             return new BadRequestObjectResult(e.Message);
         }
-        catch(SameDateException e)
+        catch (SameDateException e)
         {
             return new BadRequestObjectResult(e.Message);
         }

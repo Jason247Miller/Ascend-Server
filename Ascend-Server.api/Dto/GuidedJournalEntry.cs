@@ -6,4 +6,5 @@ public class GuidedJournalEntry
     public Guid UserId { get; set; }
     public string? EntryName { get; set; }
     public bool? Deleted { get; set; }
+    public DateOnly CreationDate { get; set; }
 }

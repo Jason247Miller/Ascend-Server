@@ -2,7 +2,6 @@ using Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
 using Ascend_Server.api.Dto;
-using Models;
 
 namespace Controllers;
 
@@ -18,7 +17,7 @@ public class HabitCompletionLogController : ControllerBase
     {
         _habitCompletionLogService = habitCompletionLogService;
 
-        _mapper = mapper; 
+        _mapper = mapper;
     }
 
     [HttpGet]
@@ -46,7 +45,7 @@ public class HabitCompletionLogController : ControllerBase
     }
 
     [HttpPost]
-    public IActionResult Create(HabitCompletionLogForCreation habitCompletionLogDto)
+    public IActionResult Create(Ascend_Server.api.Dto.HabitCompletionLogForCreation habitCompletionLogDto)
     {
         try
         {
@@ -54,7 +53,9 @@ public class HabitCompletionLogController : ControllerBase
 
             _habitCompletionLogService.Add(_habitCompletionLog);
 
-            return CreatedAtAction(nameof(GetAll), new { id = habitCompletionLogDto.Id }, habitCompletionLogDto);
+            var _habitCompletionLogDto = _mapper.Map<Models.HabitCompletionLog, Ascend_Server.api.Dto.HabitCompletionLog>(_habitCompletionLog);
+
+            return CreatedAtAction(nameof(GetAll), new { id = _habitCompletionLogDto.Id }, _habitCompletionLogDto);
         }
         catch (SameDateException e)
         {
@@ -75,11 +76,11 @@ public class HabitCompletionLogController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public IActionResult Update(HabitCompletionLog habitCompletionLogDto, Guid id)
+    public IActionResult Update(Ascend_Server.api.Dto.HabitCompletionLog habitCompletionLogDto, Guid id)
     {
         try
         {
-            var _habitCompletionLog = _mapper.Map<HabitCompletionLog, Models.HabitCompletionLog>(habitCompletionLogDto);
+            var _habitCompletionLog = _mapper.Map<Ascend_Server.api.Dto.HabitCompletionLog, Models.HabitCompletionLog>(habitCompletionLogDto);
 
             _habitCompletionLogService.Update(_habitCompletionLog, id);
 

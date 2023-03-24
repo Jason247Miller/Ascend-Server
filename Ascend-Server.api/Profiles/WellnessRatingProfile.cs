@@ -61,7 +61,7 @@ public class WellnessRatingProfile : Profile
             options => options.MapFrom(src => src.OverallDayRating)
             );
 
-      CreateMap<Models.WellnessRating, Ascend_Server.api.Dto.WellnessRating>();
+        CreateMap<Models.WellnessRating, Ascend_Server.api.Dto.WellnessRating>();
     }
 }
 

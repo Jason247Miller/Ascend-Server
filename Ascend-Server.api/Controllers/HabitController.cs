@@ -59,7 +59,9 @@ public class HabitController : ControllerBase
 
             _habitService.Add(_habit);
 
-            return CreatedAtAction(nameof(GetAll), new { id = habitDto.Id }, habitDto);
+            var _habitDto = _mapper.Map<Models.Habit, Ascend_Server.api.Dto.Habit>(_habit);
+
+            return CreatedAtAction(nameof(GetAll), new { id = _habitDto.Id }, _habitDto);
         }
         catch (Exception)
         {

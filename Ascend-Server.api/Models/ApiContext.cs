@@ -31,7 +31,7 @@ public class ApiContext : DbContext
                 Email = "jason.miller@gmail.com",
                 Password = "testPassword123!"
             }
-        });
+          });
 
             WellnessRatings.AddRange(new List<WellnessRating>
         {
@@ -51,7 +51,7 @@ public class ApiContext : DbContext
                 EnergyRating = 9,
                 OverallDayRating = 4
             }
-        });
+          });
 
             GuidedJournalEntries.AddRange(new List<GuidedJournalEntry>
         {
@@ -60,7 +60,8 @@ public class ApiContext : DbContext
                 Id = Guid.Parse("48268692-c81b-11ed-afa1-0242ac120002"),
                 UserId = Guid.Parse("f2d1b702-c81a-11ed-afa1-0242ac120002"),
                 EntryName = "What are you most greatful for?",
-                Deleted = false
+                Deleted = false,
+                CreationDate = new DateOnly(2023, 03, 01)
             },
 
           new GuidedJournalEntry
@@ -68,9 +69,10 @@ public class ApiContext : DbContext
             Id = Guid.Parse("2102282c-c81c-11ed-afa1-0242ac120002"),
             UserId = Guid.Parse("f2d1b702-c81a-11ed-afa1-0242ac120002"),
             EntryName = "What did you learn today?",
-            Deleted = false
+            Deleted = false,
+            CreationDate = new DateOnly(2023, 03, 02)
           }
-        });
+          });
 
             Habits.AddRange(new List<Habit>
         {
@@ -78,7 +80,8 @@ public class ApiContext : DbContext
                 Id = Guid.Parse("e58a9560-3ed8-4eaa-b97e-c958179961e2"),
                 UserId = Guid.Parse("f2d1b702-c81a-11ed-afa1-0242ac120002"),
                 HabitName = "20 minutes of cardio",
-                Deleted = false
+                Deleted = false,
+                CreationDate = new DateOnly(2023, 03, 02)
         },
 
         new Habit
@@ -86,8 +89,9 @@ public class ApiContext : DbContext
             Id = Guid.Parse("e58a9560-3ed8-4eaa-b97e-c958179961e3"),
             UserId = Guid.Parse("f2d1b702-c81a-11ed-afa1-0242ac120002"),
             HabitName = "Learned 1 new thing",
-            Deleted = false
-        }});
+            Deleted = false,
+            CreationDate = new DateOnly(2023, 03, 01)
+         }});
 
             HabitCompletionLogs.AddRange(new List<HabitCompletionLog>
         {
@@ -106,7 +110,7 @@ public class ApiContext : DbContext
             HabitId = Guid.Parse("e58a9560-3ed8-4eaa-b97e-c958179961e3"),
             Completed = true,
             Date = new DateOnly(2023, 3, 16)
-        }});
+         }});
 
             GuidedJournalLogs.AddRange(new List<GuidedJournalLog>
         {
@@ -125,7 +129,7 @@ public class ApiContext : DbContext
             EntryId = Guid.Parse("2102282c-c81c-11ed-afa1-0242ac120002"),
             EntryTextValue = "text here",
             Date = new DateOnly(2023, 03, 16)
-        }});
+         }});
 
             SaveChanges();
         }

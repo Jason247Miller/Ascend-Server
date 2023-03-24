@@ -1,7 +1,6 @@
 ﻿using Ascend_Server.api.Dto;
 using AutoMapper;
 
-
 namespace profiles;
 
 public class GuidedJournalLogProfile : Profile
@@ -29,7 +28,7 @@ public class GuidedJournalLogProfile : Profile
             gjl => gjl.Date,
             options => options.MapFrom(src => src.Date)
             );
-                
+
         CreateMap<Models.GuidedJournalLog, Ascend_Server.api.Dto.GuidedJournalLog>();
     }
 

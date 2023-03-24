@@ -7,7 +7,6 @@ namespace Services;
 
 public class HabitService : IHabitService
 {
-
     private readonly ApiContext _apiContext;
 
     private readonly IUserService _userService;
@@ -32,13 +31,11 @@ public class HabitService : IHabitService
 
     public void Add(Habit habit)
     {
-
         _userService.CheckUserId(habit.UserId);
 
-        var habitsForUser = _apiContext.Habits.Where(h => h.UserId == habit.UserId && h.Id == habit.Id);
+        var habitsForUser = _apiContext.Habits.FirstOrDefault(h => h.UserId == habit.UserId && h.Id == habit.Id);
 
-
-        if (habitsForUser.Any())
+        if (habitsForUser == null)
         {
             throw new DuplicateHabitException();
         }
@@ -62,10 +59,8 @@ public class HabitService : IHabitService
             existingHabit.HabitName = habit.HabitName;
 
             _apiContext.SaveChanges();
-
         }
 
     }
-
 
 }

@@ -60,9 +60,6 @@ public class WellnessRatingForCreationProfile : Profile
             wr => wr.OverallDayRating,
             options => options.MapFrom(src => src.OverallDayRating)
             );
-
-
-
     }
 }
 

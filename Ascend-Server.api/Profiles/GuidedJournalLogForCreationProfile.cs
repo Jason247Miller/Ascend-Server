@@ -1,7 +1,6 @@
 ﻿using Ascend_Server.api.Dto;
 using AutoMapper;
 
-
 namespace profiles;
 
 public class GuidedJournalLogForCreationProfile : Profile

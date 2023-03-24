@@ -60,7 +60,9 @@ public class WellnessRatingController : ControllerBase
 
             _wellnessRatingService.Add(_wellnessRating);
 
-            return CreatedAtAction(nameof(GetAll), new { id = wellnessRatingDto.Id }, wellnessRatingDto);
+            var _wellnessRatingDto = _mapper.Map<Models.WellnessRating, Ascend_Server.api.Dto.WellnessRating>(_wellnessRating);
+
+            return CreatedAtAction(nameof(GetAll), new { id = _wellnessRatingDto.Id }, _wellnessRatingDto);
         }
         catch (SameDateException e)
         {

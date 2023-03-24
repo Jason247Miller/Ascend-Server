@@ -1,4 +1,5 @@
 using System;
+
 namespace Exceptions;
 
 public class DuplicateEntryException : Exception

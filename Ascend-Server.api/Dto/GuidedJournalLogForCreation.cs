@@ -2,7 +2,7 @@
 
 public class GuidedJournalLogForCreation
 {
-    public Guid Id { get; set; }
+    public string? Id { get; set; }
     public Guid UserId { get; set; }
     public Guid EntryId { get; set; }
     public string? EntryTextValue { get; set; }

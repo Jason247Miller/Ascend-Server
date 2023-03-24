@@ -11,14 +11,14 @@ public class GuidedJournalEntryController : ControllerBase
 {
     private readonly IGuidedJournalEntryService _guidedJournalEntryService;
 
-    private readonly IMapper _mapper; 
+    private readonly IMapper _mapper;
 
     public GuidedJournalEntryController(IGuidedJournalEntryService guidedJournalEntryService,
                                         IMapper mapper)
     {
         _guidedJournalEntryService = guidedJournalEntryService;
 
-        _mapper = mapper; 
+        _mapper = mapper;
     }
 
     [HttpGet]
@@ -56,7 +56,9 @@ public class GuidedJournalEntryController : ControllerBase
 
             _guidedJournalEntryService.Add(_guidedJournalEntry);
 
-            return CreatedAtAction(nameof(GetAll), new { id = guidedJournalEntryDto.Id }, guidedJournalEntryDto);
+            var _guidedJournalEntryDto = _mapper.Map<Models.GuidedJournalEntry, Ascend_Server.api.Dto.GuidedJournalEntry>(_guidedJournalEntry);
+
+            return CreatedAtAction(nameof(GetAll), new { id = _guidedJournalEntryDto.Id }, _guidedJournalEntryDto);
         }
         catch (DuplicateEntryException e)
         {

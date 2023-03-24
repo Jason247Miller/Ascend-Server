@@ -1,7 +1,5 @@
 using Models;
 using Exceptions;
-using System;
-using Services;
 
 namespace Services;
 
@@ -60,16 +58,7 @@ public class WellnessRatingService : IWellnessRatingService
         }
         else
         {
-            existingRating.SleepRating = wellnessRatingPassed.SleepRating;
-            existingRating.ExerciseRating = wellnessRatingPassed.ExerciseRating;
-            existingRating.NutritionRating = wellnessRatingPassed.NutritionRating;
-            existingRating.StressRating = wellnessRatingPassed.StressRating;
-            existingRating.SunlightRating = wellnessRatingPassed.SunlightRating;
-            existingRating.MindfulnessRating = wellnessRatingPassed.MindfulnessRating;
-            existingRating.ProductivityRating = wellnessRatingPassed.ProductivityRating;
-            existingRating.MoodRating = wellnessRatingPassed.MoodRating;
-            existingRating.EnergyRating = wellnessRatingPassed.EnergyRating;
-            existingRating.OverallDayRating = wellnessRatingPassed.OverallDayRating;
+            _apiContext.Add(wellnessRatingPassed);
 
             _apiContext.SaveChanges();
         }

@@ -41,10 +41,10 @@ public class HabitCompletionLogService : IHabitCompletionLogService
             throw new NotFoundException("Habit");
         }
 
-        var existsForSameDate = _apiContext.HabitCompletionLogs.Where(hcl => hcl.UserId == habitCompletionLogPassed.UserId &&
+        var existsForSameDate = _apiContext.HabitCompletionLogs.FirstOrDefault(hcl => hcl.UserId == habitCompletionLogPassed.UserId &&
                                                                       hcl.Date == habitCompletionLogPassed.Date);
 
-        if (existsForSameDate.Any())
+        if (existsForSameDate == null)
         {
             throw new SameDateException("Habit Log", habitCompletionLogPassed.Date.ToString() ?? "");
         }
