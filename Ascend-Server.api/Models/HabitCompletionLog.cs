@@ -1,12 +1,12 @@
 namespace Models; 
 using System.ComponentModel.DataAnnotations;
-public class Habit
+public class HabitCompletionLog
 {   [Key]
     public int Id {get; set;}
     [Required]
     public int UserId {get; set;}
     [Required]
-    public string? Uuid {get; set;}
-    public bool? Deleted {get; set;}
-    public string? HabitName {get; set;}
+    public string? HabitId {get; set;}
+    public bool? Completed {get; set;}
+    public DateOnly? Date {get; set;}
 }

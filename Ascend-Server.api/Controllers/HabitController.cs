@@ -15,17 +15,20 @@ public class HabitController: ControllerBase
     {
      _habitService = habitService; 
     }
+
     [HttpGet("{id}")]
     public ActionResult<List<Habit>> GetAllForUserId(int id)
-    {   List<Habit> habitsForUserId;
+    {   
+        List<Habit> habitsForUserId;
+
         try
         {
             habitsForUserId = _habitService.GetAllForUserId(id); 
         }
         
-        catch(Exception e)
+        catch(Exception)
         {
-            return new BadRequestObjectResult(e.Message); 
+            return new BadRequestResult(); 
         }
 
         if(habitsForUserId == null)
@@ -33,6 +36,8 @@ public class HabitController: ControllerBase
 
       return habitsForUserId; 
     }
+
+    
 
     [HttpPost]
     public IActionResult Create(Habit habit)
@@ -42,12 +47,30 @@ public class HabitController: ControllerBase
             _habitService.Add(habit); 
             return CreatedAtAction(nameof(GetAllForUserId), new {id = habit.Id}, habit);
         }
-        catch(Exception e)
+        catch(Exception)
         {
-            return new BadRequestObjectResult(e.Message);
+            return new BadRequestResult();
         }
         
-       
+    }
+
+    [HttpPut("{id}")]
+    public IActionResult Update(int id, Habit habit)
+    {  
+        try
+        { 
+            _habitService.Update(habit); 
+            
+            return NoContent(); 
+        }
+        catch(NotFoundException e )
+        {  
+            return new BadRequestObjectResult(e.Message);
+        }
+        catch(Exception)
+        {
+            return new BadRequestResult(); 
+        }
     }
 
 }
