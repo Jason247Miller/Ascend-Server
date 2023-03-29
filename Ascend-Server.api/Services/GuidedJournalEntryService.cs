@@ -1,88 +1,65 @@
 using Models;
 using Exceptions;
-using System;
-using Services;
+
 namespace Services;
 
 public class GuidedJournalEntryService : IGuidedJournalEntryService
 {
-    List<GuidedJournalEntry> GuidedJournalEntries { get; }
-
-    int nextId = 3;
-
     private readonly IUserService _userService;
 
-    public GuidedJournalEntryService(IUserService userService)
+    private readonly ApiContext _apiContext;
+
+    public GuidedJournalEntryService(IUserService userService,
+                                     ApiContext apiContext)
     {
+        _apiContext = apiContext;
+
         _userService = userService;
-
-        GuidedJournalEntries = new List<GuidedJournalEntry>
-        {
-            new GuidedJournalEntry {
-                Id = 1,
-                UserId = 1,
-                EntryName = "What are you most greatful for?",
-                Uuid = "2e2bd1d4-c4a3-475a-bc8a-5aea1156e0ec",
-                Deleted = false
-            },
-
-            new GuidedJournalEntry {
-                Id = 2,
-                UserId = 1,
-                EntryName = "What did you learn today?",
-                Uuid = "d58a9560-3ed8-4eaa-b97e-c558179861e9",
-                Deleted = false
-            }
-
-        };
     }
 
-    public List<GuidedJournalEntry> GetAllForUserId(int userId)
+    public GuidedJournalEntry[] GetAllForUserId(Guid userId)
     {
-        if (_userService.CheckUser(userId) == null)
-        {
-            throw new Exception("Invalid Request");
-        }
+        _userService.CheckUserId(userId);
 
-        List<GuidedJournalEntry> userEntries = GuidedJournalEntries.Where(gje => gje.UserId == userId).ToList();
+        var userEntries = _apiContext.GuidedJournalEntries.Where(gje => gje.UserId == userId).ToArray();
+
         return userEntries;
     }
 
-    public void Add(GuidedJournalEntry guidedJournalEntry)
+    public void Add(GuidedJournalEntry guidedJournalEntryPassed)
     {
-        if (_userService.CheckUser(guidedJournalEntry.UserId) == null)
+        _userService.CheckUserId(guidedJournalEntryPassed.UserId);
+
+        var entriesForUser = _apiContext.GuidedJournalEntries.FirstOrDefault(gje => gje.UserId == guidedJournalEntryPassed.UserId && gje.Id == gje.Id);
+
+        if (entriesForUser == null)
         {
-            throw new UserDoesNotExistException(guidedJournalEntry.UserId);
-        }
-        var entriesForUser = GuidedJournalEntries.Where(gje => gje.UserId == guidedJournalEntry.UserId && gje.Uuid == gje.Uuid);
-
-        if (entriesForUser.Any())
-        {
-            throw new Exception("Bad Request: Unable to Create new Habit due to UUID Duplication");
+            Console.WriteLine("duplicate entries");
+            throw new DuplicateEntryException();
         }
 
-        guidedJournalEntry.Id = nextId++;
+        _apiContext.GuidedJournalEntries.Add(guidedJournalEntryPassed);
 
-        GuidedJournalEntries.Add(guidedJournalEntry);
+        _apiContext.SaveChanges();
     }
 
-    public void Update(GuidedJournalEntry guidedJournalEntry)
+    public void Update(GuidedJournalEntry guidedJournalEntryPassed, Guid id)
     {
-        var index = GuidedJournalEntries.FindIndex(gje => gje.Id == guidedJournalEntry.Id && gje.UserId == guidedJournalEntry.UserId);
+        var existingJournalEntry = _apiContext.GuidedJournalEntries.FirstOrDefault(gje => gje.Id == id &&
+                                                                                   gje.UserId == guidedJournalEntryPassed.UserId);
 
-        if (index == -1)
+        if (existingJournalEntry == null)
         {
-            throw new NotFoundException(guidedJournalEntry);
+            throw new NotFoundException("Journal Entry");
         }
         else
         {
-            GuidedJournalEntries[index] = guidedJournalEntry;
-        }
+            existingJournalEntry.EntryName = guidedJournalEntryPassed.EntryName;
 
-    }
-    public bool EntryExistsAndNotDeleted(string? entryIdPassed, int userIdPassed)
-    {
-        return GuidedJournalEntries.Any(gje => gje.Uuid == entryIdPassed && gje.Deleted == false && gje.UserId == userIdPassed);
+            existingJournalEntry.Deleted = guidedJournalEntryPassed.Deleted;
+
+            _apiContext.SaveChanges();
+        }
 
     }
 

@@ -1,75 +1,93 @@
-using Models; 
-using Services; 
-using Exceptions; 
+using Exceptions;
 using Microsoft.AspNetCore.Mvc;
+using AutoMapper;
+using Ascend_Server.api.Dto;
+using Models;
 
-namespace Controllers; 
+namespace Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class HabitController: ControllerBase
-{ 
+public class HabitController : ControllerBase
+{
     private readonly IHabitService _habitService;
 
-    public HabitController(IHabitService habitService)
+    private readonly IMapper _mapper; 
+
+    public HabitController(IHabitService habitService,
+                           IMapper mapper)
     {
-     _habitService = habitService; 
+        _habitService = habitService;
+
+        _mapper = mapper;
     }
 
-    [HttpGet("{id}")]
-    public ActionResult<List<Habit>> GetAllForUserId(int id)
-    {   
-        List<Habit> habitsForUserId;
+    [HttpGet]
+    public IActionResult GetAll()
+    {
+        // will get from auth service later
+        Guid userId = Guid.Parse("f2d1b702-c81a-11ed-afa1-0242ac120002");
 
         try
         {
-            habitsForUserId = _habitService.GetAllForUserId(id); 
+            var habits = _habitService.GetAllForUserId(userId);
+
+            if (habits == null)
+            {
+                return NotFound();
+            }
+            var dtos = _mapper.Map<Models.Habit[], Ascend_Server.api.Dto.Habit[]>(habits);
+
+            return new OkObjectResult(dtos);
         }
-        
-        catch(Exception)
+        catch (UserDoesNotExistException e)
         {
-            return new BadRequestResult(); 
+            return new BadRequestObjectResult(e.Message);
         }
-
-        if(habitsForUserId == null)
-            return NotFound(); 
-
-      return habitsForUserId; 
-    }
-
-    
-
-    [HttpPost]
-    public IActionResult Create(Habit habit)
-    { 
-     try
-        {   
-            _habitService.Add(habit); 
-            return CreatedAtAction(nameof(GetAllForUserId), new {id = habit.Id}, habit);
-        }
-        catch(Exception)
+        catch (Exception)
         {
             return new BadRequestResult();
         }
-        
+    }
+
+    [HttpPost]
+    public IActionResult Create(HabitForCreation habitDto)
+    {
+        try
+        {
+            var _habit = _mapper.Map<HabitForCreation, Models.Habit>(habitDto);
+
+            _habitService.Add(_habit);
+
+            var _habitDto = _mapper.Map<Models.Habit, Ascend_Server.api.Dto.Habit>(_habit);
+
+            return CreatedAtAction(nameof(GetAll), new { id = _habitDto.Id }, _habitDto);
+        }
+        catch (Exception)
+        {
+            return new BadRequestResult();
+        }
+
     }
 
     [HttpPut("{id}")]
-    public IActionResult Update(int id, Habit habit)
-    {  
+    public IActionResult Update(Ascend_Server.api.Dto.Habit habitDto, Guid id)
+    {
         try
-        { 
-            _habitService.Update(habit); 
-            
-            return NoContent(); 
+        {
+            var _habit = _mapper.Map<Ascend_Server.api.Dto.Habit, Models.Habit>(habitDto);
+
+            _habitService.Update(_habit, id);
+
+            return NoContent();
         }
-        catch(NotFoundException e )
-        {  
+        catch (NotFoundException e)
+        {
             return new BadRequestObjectResult(e.Message);
         }
-        catch(Exception)
+        catch (Exception)
         {
-            return new BadRequestResult(); 
+            return new BadRequestResult();
         }
     }
 

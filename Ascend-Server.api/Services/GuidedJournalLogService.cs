@@ -6,86 +6,71 @@ namespace Services;
 
 public class GuidedJournalLogService : IGuidedJournalLogService
 {
-    List<GuidedJournalLog> GuidedJournalLogs { get; }
-
-    int nextId = 3;
-
     private readonly IUserService _userService;
 
-    private readonly IGuidedJournalEntryService _guidedJournalEntryService;
+    private readonly ApiContext _apiContext;
 
     public GuidedJournalLogService(
+       ApiContext apiContext,
        IUserService userService,
        IGuidedJournalEntryService guidedJournalEntryService
-   )
+    )
     {
+        _apiContext = apiContext;
+
         _userService = userService;
-
-        _guidedJournalEntryService = guidedJournalEntryService;
-
-        GuidedJournalLogs = new List<GuidedJournalLog>
-        {
-            new GuidedJournalLog {
-                Id = 1,
-                UserId = 1,
-                EntryId = "2e2bd1d4-c4a3-475a-bc8a-5aea1156e0ec",
-                EntryTextValue = "text here",
-                Date = new DateOnly(2023, 03, 16)
-            },
-
-            new GuidedJournalLog {
-                Id = 2,
-                UserId = 2,
-                EntryId = "d58a9560-3ed8-4eaa-b97e-c558179861e9",
-                EntryTextValue = "text here",
-                Date = new DateOnly(2023, 03, 16)
-            }
-
-        };
     }
 
-    public List<GuidedJournalLog> GetAllForUserId(int userId)
+    public GuidedJournalLog[] GetAllForUserId(Guid userId)
     {
-        if (_userService.CheckUser(userId) == null)
-        {
-            throw new Exception("Invalid Request");
-        }
+        _userService.CheckUserId(userId);
 
-        List<GuidedJournalLog> userGuidedJournalLogs = GuidedJournalLogs.Where(gjl => gjl.UserId == userId).ToList();
+        var userGuidedJournalLogs = _apiContext.GuidedJournalLogs.Where(gjl => gjl.UserId == userId).ToArray();
 
         return userGuidedJournalLogs;
     }
 
-    public void Add(GuidedJournalLog guidedJournalLog)
+    public void Add(GuidedJournalLog guidedJournalLogPassed)
     {
-        if (_userService.CheckUser(guidedJournalLog.UserId) == null)
+        _userService.CheckUserId(guidedJournalLogPassed.UserId);
+
+        var journalEntryForLog = _apiContext.GuidedJournalEntries.FirstOrDefault(gje => gje.Id == guidedJournalLogPassed.EntryId &&
+                                                                                 gje.Deleted == false &&
+                                                                                 gje.UserId == guidedJournalLogPassed.UserId);
+        if (journalEntryForLog == null)
         {
-            throw new UserDoesNotExistException(guidedJournalLog.UserId);
+            throw new NotFoundException("Journal Entry for Journal Log");
         }
-        var journalLogFound = _guidedJournalEntryService.EntryExistsAndNotDeleted(guidedJournalLog.EntryId, guidedJournalLog.UserId);
 
-        if (!journalLogFound)
+        var existsForSameDate = _apiContext.GuidedJournalLogs.FirstOrDefault(gjl => gjl.UserId == guidedJournalLogPassed.UserId &&
+                                                                    gjl.Date == guidedJournalLogPassed.Date);
+
+        if (existsForSameDate == null)
         {
-            throw new JournalEntryNotFoundException();
+            throw new SameDateException("Guided Journal Log", guidedJournalLogPassed.Date.ToString() ?? "");
         }
 
-        guidedJournalLog.Id = nextId++;
+        _apiContext.GuidedJournalLogs.Add(guidedJournalLogPassed);
 
-        GuidedJournalLogs.Add(guidedJournalLog);
+        _apiContext.SaveChanges();
     }
 
-    public void Update(GuidedJournalLog guidedJournalLog)
+    public void Update(GuidedJournalLog guidedJournalLogPassed, Guid id)
     {
 
-        var index = GuidedJournalLogs.FindIndex(gjl => gjl.Id == guidedJournalLog.Id && gjl.UserId == guidedJournalLog.UserId);
+        var existingJournalLogPassed = _apiContext.GuidedJournalLogs.FirstOrDefault(gjl => gjl.Id == id && gjl.UserId == guidedJournalLogPassed.UserId);
 
-        if (index == -1)
+        if (existingJournalLogPassed == null)
         {
-            throw new NotFoundException(guidedJournalLog);
+            throw new NotFoundException("Journal Log");
         }
         else
         {
-            GuidedJournalLogs[index] = guidedJournalLog;
+            existingJournalLogPassed.EntryTextValue = guidedJournalLogPassed.EntryTextValue;
+
+            existingJournalLogPassed.Date = guidedJournalLogPassed.Date;
+
+            _apiContext.SaveChanges();
         }
 
     }

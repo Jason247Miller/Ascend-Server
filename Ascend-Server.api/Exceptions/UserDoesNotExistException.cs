@@ -1,15 +1,11 @@
 using System;
-using Models; 
+using Models;
+
 namespace Exceptions;
 
-    public class UserDoesNotExistException : Exception
-    {
-        private readonly int _userId;
+public class UserDoesNotExistException : Exception
+{
 
-        public override string Message => $"Error: User Id: '{_userId}' is Invalid.";
+    public override string Message => "Error: Invalid User Id";
 
-        public UserDoesNotExistException(int userId)
-        {
-            _userId = userId;
-        }
-    }
+}

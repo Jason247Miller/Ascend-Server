@@ -2,14 +2,14 @@ using System;
 
 namespace Exceptions;
 
-    public class NotFoundException : Exception
+public class NotFoundException : Exception
+{
+    private readonly string _entity;
+
+    public override string Message => $"{_entity}' does not exists.";
+
+    public NotFoundException(string entity)
     {
-        private readonly object _item;
-
-        public override string Message => $"{_item}' does not exists.";
-
-        public NotFoundException(object item)
-        {
-            _item = item;
-        }
+        _entity = entity;
     }
+}

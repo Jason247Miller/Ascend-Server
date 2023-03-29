@@ -1,10 +1,8 @@
-  using Models; 
+using Models;
 
-  public interface IGuidedJournalEntryService
-    {      
-        List<GuidedJournalEntry> GetAllForUserId(int userId);
-        void Add(GuidedJournalEntry guidedJournalEntry);
-        bool EntryExistsAndNotDeleted(string? entryIdPassed, int userIdPassed);
-        void Update(GuidedJournalEntry guidedJournalEntry);
-       
-    }
+public interface IGuidedJournalEntryService
+{
+    GuidedJournalEntry[] GetAllForUserId(Guid userId);
+    void Add(GuidedJournalEntry guidedJournalEntry);
+    void Update(GuidedJournalEntry guidedJournalEntry, Guid id);
+}

@@ -6,90 +6,64 @@ namespace Services;
 
 public class UserService : IUserService
 {
-    List<User> Users { get; }
+    private readonly ApiContext _apiContext;
 
-    int nextId = 3;
-
-    public UserService()
+    public UserService(ApiContext apiContext)
     {
-        Users = new List<User>
-        {
-            new User
-            {
-            Id = 1,
-            FirstName = "Jason",
-            LastName = "Miller",
-            Email = "jason.miller@gmail.com",
-            Password = "testPass123!"
-            },
-            new User
-            {
-            Id = 2,
-            FirstName = "Jim",
-            LastName = "Morrison",
-            Email = "jim.morrison@yahoo.com",
-            Password = "testPass123!"
-            }
-        };
+        _apiContext = apiContext;
     }
 
-    public List<User> GetAll() => Users;
+    public User? Get(Guid id) => _apiContext.Users.FirstOrDefault(u => u.Id == id);
 
-    public User? Get(int id) => Users.FirstOrDefault(u => u.Id == id);
-
-    public void Add(User user)
+    public void Add(User userPassed)
     {
-        var userEmailExists = Users.FirstOrDefault(u => u.Email == user.Email);
+        var userEmailExists = _apiContext.Users.FirstOrDefault(u => u.Email == userPassed.Email);
 
-        if (userEmailExists == null)
+        if (userEmailExists != null)
         {
-            throw new EmailDoesNotExistException(user.Email);
+            throw new Exception("User already Exists");
         }
 
-        user.Id = nextId++;
+        _apiContext.Users.Add(userPassed);
 
-        Users.Add(user);
+        _apiContext.SaveChanges();
     }
 
-    public void Update(User user)
+    public void Update(User userPassed)
     {
-        var index = Users.FindIndex(u => u.Id == user.Id);
+        var existingUser = _apiContext.Users.FirstOrDefault(u => u.Id == userPassed.Id);
 
-        if (index == -1)
+        if (existingUser == null)
         {
-            throw new NotFoundException(user);
+            throw new NotFoundException("User");
         }
         else
         {
-            Users[index] = user;
+            existingUser.Email = userPassed.Email;
+            existingUser.FirstName = userPassed.FirstName;
+            existingUser.LastName = userPassed.LastName;
         }
 
     }
 
-    public void Delete(User user)
+    public void Delete(User userPassed)
     {
-        var index = Users.FindIndex(u => u.Id == user.Id);
+        var existingUser = _apiContext.Users.FirstOrDefault(u => u.Id == userPassed.Id);
 
-        if (index == -1)
+        if (existingUser == null)
         {
-            throw new NotFoundException(user);
+            throw new NotFoundException("User");
         }
         else
         {
-            Users.RemoveAt(index);
+            _apiContext.Users.Remove(existingUser);
         }
     }
 
-    public User? CheckUser(int id)
-    {
-        var user = Users.FirstOrDefault(u => u.Id == id);
-
-        return user as User;
-    }
     public User? FindUserByEmail(string email)
     {
 
-        var user = Users.FirstOrDefault(u => u.Email == email);
+        var user = _apiContext.Users.FirstOrDefault(u => u.Email == email);
 
         if (user == null)
         {
@@ -106,5 +80,14 @@ public class UserService : IUserService
             return false;
         }
         return true;
+    }
+    public void CheckUserId(Guid userIdPassed)
+    {
+        var userId = _apiContext.Users.SingleOrDefault(u => u.Id == userIdPassed);
+
+        if (userId == null)
+        {
+            throw new UserDoesNotExistException();
+        }
     }
 }

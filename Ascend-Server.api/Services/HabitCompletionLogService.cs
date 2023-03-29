@@ -2,92 +2,75 @@ using Models;
 using Exceptions;
 using System;
 using Services;
+
 namespace Services;
 
 public class HabitCompletionLogService : IHabitCompletionLogService
 {
-    List<HabitCompletionLog> HabitCompletionLogs { get; }
-
-    int nextId = 3;
-
     private readonly IUserService _userService;
 
-    private readonly IHabitService _habitService;
+    private readonly ApiContext _apiContext;
 
-    public HabitCompletionLogService(
-       IUserService userService,
-       IHabitService habitService
-   )
+    public HabitCompletionLogService(IUserService userService,
+                                     ApiContext apiContext)
     {
         _userService = userService;
 
-        _habitService = habitService;
+        _apiContext = apiContext;
 
-        HabitCompletionLogs = new List<HabitCompletionLog>
-        {
-            new HabitCompletionLog {
-                Id = 1,
-                UserId = 1,
-                HabitId = "d58a9560-3ed8-4eaa-b97e-c558179861e8",
-                Completed = true,
-                Date = new DateOnly(2023, 3, 16)
-            },
-
-            new HabitCompletionLog {
-                Id = 1,
-                UserId = 1,
-                HabitId = "2e2bd1d4-c4a3-475a-bc8a-5aea1156e0ec",
-                Completed = true,
-                Date = new DateOnly(2023, 3, 16)
-            }
-
-        };
     }
 
-    public List<HabitCompletionLog> GetAllForUserId(int userId)
+    public HabitCompletionLog[] GetAllForUserId(Guid userId)
     {
-        if (_userService.CheckUser(userId) == null)
-        {
-            throw new Exception("Invalid Request");
-        }
+        _userService.CheckUserId(userId);
 
-        List<HabitCompletionLog> userHabitCompletionLogs = HabitCompletionLogs.Where(hcl => hcl.UserId == userId).ToList();
+        var userHabitCompletionLogs = _apiContext.HabitCompletionLogs.Where(hcl => hcl.UserId == userId).ToArray();
+
         return userHabitCompletionLogs;
     }
 
-    public void Add(HabitCompletionLog habitCompletionLog)
+    public void Add(HabitCompletionLog habitCompletionLogPassed)
     {
-        if (_userService.CheckUser(habitCompletionLog.UserId) == null)
+        _userService.CheckUserId(habitCompletionLogPassed.UserId);
+
+        var habitForLog = _apiContext.Habits.FirstOrDefault(h => h.Id == habitCompletionLogPassed.HabitId &&
+                                                                                 h.Deleted == false &&
+                                                                                 h.UserId == habitCompletionLogPassed.UserId);
+        if (habitForLog == null)
         {
-            throw new UserDoesNotExistException(habitCompletionLog.UserId);
+            throw new NotFoundException("Habit");
         }
-        var habitFound = _habitService.HabitExistsAndNotDeleted(habitCompletionLog.HabitId, habitCompletionLog.UserId);
 
-        if (!habitFound)
+        var existsForSameDate = _apiContext.HabitCompletionLogs.FirstOrDefault(hcl => hcl.UserId == habitCompletionLogPassed.UserId &&
+                                                                      hcl.Date == habitCompletionLogPassed.Date);
+
+        if (existsForSameDate == null)
         {
-            throw new HabitNotFoundException();
+            throw new SameDateException("Habit Log", habitCompletionLogPassed.Date.ToString() ?? "");
         }
 
-        habitCompletionLog.Id = nextId++;
+        _apiContext.HabitCompletionLogs.Add(habitCompletionLogPassed);
 
-        HabitCompletionLogs.Add(habitCompletionLog);
+        _apiContext.SaveChanges();
     }
 
-    public void Update(HabitCompletionLog habitCompletionLog)
+    public void Update(HabitCompletionLog habitCompletionLogPassed, Guid id)
     {
 
-        var index = HabitCompletionLogs.FindIndex(
-            hcl => hcl.Id == habitCompletionLog.Id &&
-            hcl.UserId == habitCompletionLog.UserId
+        var existingHabitCompletionLog = _apiContext.HabitCompletionLogs.FirstOrDefault(
+            hcl => hcl.Id == id &&
+            hcl.UserId == habitCompletionLogPassed.UserId
             );
 
-        if (index == -1)
+        if (existingHabitCompletionLog == null)
         {
-            throw new NotFoundException(habitCompletionLog);
+            throw new NotFoundException("Habit Completion Log");
         }
         else
         {
-            HabitCompletionLogs[index] = habitCompletionLog;
+            existingHabitCompletionLog.Completed = habitCompletionLogPassed.Completed;
+
+            existingHabitCompletionLog.Date = habitCompletionLogPassed.Date;
         }
 
     }

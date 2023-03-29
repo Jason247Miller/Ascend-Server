@@ -1,71 +1,93 @@
-using Models; 
-using Services; 
-using Exceptions; 
+using Exceptions;
 using Microsoft.AspNetCore.Mvc;
+using AutoMapper;
+using Ascend_Server.api.Dto;
 
-namespace Controllers; 
+namespace Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class GuidedJournalEntryController: ControllerBase
-{ 
+public class GuidedJournalEntryController : ControllerBase
+{
     private readonly IGuidedJournalEntryService _guidedJournalEntryService;
 
-    public GuidedJournalEntryController(IGuidedJournalEntryService guidedJournalEntryService)
+    private readonly IMapper _mapper;
+
+    public GuidedJournalEntryController(IGuidedJournalEntryService guidedJournalEntryService,
+                                        IMapper mapper)
     {
-     _guidedJournalEntryService = guidedJournalEntryService; 
+        _guidedJournalEntryService = guidedJournalEntryService;
+
+        _mapper = mapper;
     }
 
-    [HttpGet("{id}")]
-    public ActionResult<List<GuidedJournalEntry>> GetAllForUserId(int id)
-    {   List<GuidedJournalEntry> entriesForUserId;
+    [HttpGet]
+    public IActionResult GetAll()
+    {
+        // will get from auth service later
+        Guid userId = Guid.Parse("f2d1b702-c81a-11ed-afa1-0242ac120002");
 
         try
         {
-            entriesForUserId = _guidedJournalEntryService.GetAllForUserId(id); 
+            var guidedJournalEntries = _guidedJournalEntryService.GetAllForUserId(userId);
+
+            if (guidedJournalEntries == null)
+            {
+                return NotFound();
+            }
+
+            var dtos = _mapper.Map<Models.GuidedJournalEntry[], Ascend_Server.api.Dto.GuidedJournalEntry[]>(guidedJournalEntries);
+
+            return new OkObjectResult(dtos);
         }
-        catch(Exception)
+        catch (Exception)
         {
-            return new BadRequestResult(); 
+            return new BadRequestResult();
         }
 
-        if(entriesForUserId == null)
-            return NotFound(); 
-
-      return entriesForUserId; 
     }
 
     [HttpPost]
-    public IActionResult Create(GuidedJournalEntry guidedJournalEntry)
-    { 
-     try
-        {   
-            _guidedJournalEntryService.Add(guidedJournalEntry); 
-            
-            return CreatedAtAction(nameof(GetAllForUserId), new {id = guidedJournalEntry.Id}, guidedJournalEntry);
+    public IActionResult Create(GuidedJournalEntryForCreation guidedJournalEntryDto)
+    {
+        try
+        {
+            var _guidedJournalEntry = _mapper.Map<GuidedJournalEntryForCreation, Models.GuidedJournalEntry>(guidedJournalEntryDto);
+
+            _guidedJournalEntryService.Add(_guidedJournalEntry);
+
+            var _guidedJournalEntryDto = _mapper.Map<Models.GuidedJournalEntry, Ascend_Server.api.Dto.GuidedJournalEntry>(_guidedJournalEntry);
+
+            return CreatedAtAction(nameof(GetAll), new { id = _guidedJournalEntryDto.Id }, _guidedJournalEntryDto);
         }
-        catch(Exception)
+        catch (DuplicateEntryException e)
+        {
+            return new BadRequestObjectResult(e.Message);
+        }
+        catch (Exception)
         {
             return new BadRequestResult();
-        } 
+        }
     }
 
     [HttpPut("{id}")]
-    public IActionResult Update(int id, GuidedJournalEntry guidedJournalEntry)
-    {  
+    public IActionResult Update(GuidedJournalEntry guidedJournalEntryDto, Guid id)
+    {
         try
-        { 
-            _guidedJournalEntryService.Update(guidedJournalEntry); 
-            
-            return NoContent(); 
+        {
+            var _guidedJournalEntry = _mapper.Map<GuidedJournalEntry, Models.GuidedJournalEntry>(guidedJournalEntryDto);
+
+            _guidedJournalEntryService.Update(_guidedJournalEntry, id);
+
+            return NoContent();
         }
-        catch(NotFoundException e)
-        {  
+        catch (NotFoundException e)
+        {
             return new BadRequestObjectResult(e.Message);
         }
-        catch(Exception)
+        catch (Exception)
         {
-            return new BadRequestResult(); 
+            return new BadRequestResult();
         }
     }
 
