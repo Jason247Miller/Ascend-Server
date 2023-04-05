@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
 using Ascend_Server.api.Dto;
 using Models;
+using Ascend_Server.api.IConfiguration;
+using Microsoft.EntityFrameworkCore;
 
 namespace Controllers;
 
@@ -10,31 +12,32 @@ namespace Controllers;
 [Route("api/[controller]")]
 public class HabitController : ControllerBase
 {
-    private readonly IHabitService _habitService;
+    private readonly IUnitOfWork _unitOfWork;
 
-    private readonly IMapper _mapper; 
+    private readonly IMapper _mapper;
 
-    public HabitController(IHabitService habitService,
+    public HabitController(IUnitOfWork unitOfWork,
                            IMapper mapper)
     {
-        _habitService = habitService;
+        _unitOfWork = unitOfWork;
 
         _mapper = mapper;
     }
 
     [HttpGet]
-    public IActionResult GetAll()
+    public async Task<IActionResult> GetAll()
     {
-        // will get from auth service later
+        //will get from auth service later
         Guid userId = Guid.Parse("f2d1b702-c81a-11ed-afa1-0242ac120002");
 
         try
         {
-            var habits = _habitService.GetAllForUserId(userId);
+            var habits = await _unitOfWork.Habits.GetAllForUserId(userId);
 
             if (habits == null)
             {
                 return NotFound();
+
             }
             var dtos = _mapper.Map<Models.Habit[], Ascend_Server.api.Dto.Habit[]>(habits);
 
@@ -48,20 +51,27 @@ public class HabitController : ControllerBase
         {
             return new BadRequestResult();
         }
+
     }
 
     [HttpPost]
-    public IActionResult Create(HabitForCreation habitDto)
+    public async Task<IActionResult> Create(HabitForCreation habitDto)
     {
         try
         {
             var _habit = _mapper.Map<HabitForCreation, Models.Habit>(habitDto);
 
-            _habitService.Add(_habit);
+            await _unitOfWork.Habits.Add(_habit);
+
+            await _unitOfWork.CompleteAsync();
 
             var _habitDto = _mapper.Map<Models.Habit, Ascend_Server.api.Dto.Habit>(_habit);
 
             return CreatedAtAction(nameof(GetAll), new { id = _habitDto.Id }, _habitDto);
+        }
+        catch (DuplicateHabitException e)
+        {
+            return Conflict(e.Message);
         }
         catch (Exception)
         {
@@ -77,7 +87,7 @@ public class HabitController : ControllerBase
         {
             var _habit = _mapper.Map<Ascend_Server.api.Dto.Habit, Models.Habit>(habitDto);
 
-            _habitService.Update(_habit, id);
+            _unitOfWork.Habits.Update(_habit, id);
 
             return NoContent();
         }
