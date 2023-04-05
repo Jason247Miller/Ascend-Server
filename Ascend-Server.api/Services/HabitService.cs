@@ -1,53 +1,43 @@
 using Models;
 using Exceptions;
-using System;
-using Services;
+using Ascend_Server.api.Services;
+using Microsoft.EntityFrameworkCore;
 
 namespace Services;
 
-public class HabitService : IHabitService
+public class HabitService : GenericService<Habit>, IHabitService
 {
-    private readonly ApiContext _apiContext;
-
-    private readonly IUserService _userService;
-
     public HabitService(
-        IUserService userService,
-        ApiContext apiContext)
+        ApiContext apiContext,
+        IUserService userService) : base(apiContext, userService)
+    { }
+    public async Task<Habit[]> GetAllForUserId(Guid userIdPassed)
     {
-        _apiContext = apiContext;
-        _userService = userService;
-    }
-
-    public Habit[] GetAllForUserId(Guid userIdPassed)
-    {
-
         _userService.CheckUserId(userIdPassed);
 
-        var userHabits = _apiContext.Habits.Where(h => h.UserId == userIdPassed).ToArray();
+        var userHabits = dbSet.Where(h => h.UserId == userIdPassed).ToArrayAsync();
 
-        return userHabits;
+        return await userHabits;
     }
 
-    public void Add(Habit habit)
+    public override async Task Add(Habit habit)
     {
         _userService.CheckUserId(habit.UserId);
 
-        var habitsForUser = _apiContext.Habits.FirstOrDefault(h => h.UserId == habit.UserId && h.Id == habit.Id);
+        var habitsForUser = dbSet.SingleOrDefault(h => h.UserId == habit.UserId && h.Id == habit.Id);
 
-        if (habitsForUser == null)
+        if (habitsForUser != null)
         {
             throw new DuplicateHabitException();
         }
+        await dbSet.AddAsync(habit);
 
-        _apiContext.Habits.Add(habit);
     }
 
     public void Update(Habit habit, Guid id)
     {
-        var existingHabit = _apiContext.Habits.SingleOrDefault(h => h.Id == id &&
-                                                         h.UserId == habit.UserId);
-
+        var existingHabit = dbSet.SingleOrDefault(h => h.Id == id &&
+                                                  h.UserId == habit.UserId);
         if (existingHabit == null)
         {
             throw new NotFoundException("Habit");
@@ -58,7 +48,8 @@ public class HabitService : IHabitService
 
             existingHabit.HabitName = habit.HabitName;
 
-            _apiContext.SaveChanges();
+            dbSet.Update(existingHabit);
+
         }
 
     }
