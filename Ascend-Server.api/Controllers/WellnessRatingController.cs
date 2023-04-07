@@ -1,8 +1,9 @@
-using Models;
-using Exceptions;
+using Data;
+using Data.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
-using Ascend_Server.api.Dto;
+using Dto;
+using IServices;
 
 namespace Controllers;
 
@@ -36,7 +37,7 @@ public class WellnessRatingController : ControllerBase
             {
                 return NotFound();
             }
-            var dtos = _mapper.Map<Models.WellnessRating[], Ascend_Server.api.Dto.WellnessRating[]>(wellnessRatings);
+            var dtos = _mapper.Map<Data.WellnessRating[], Dto.WellnessRating[]>(wellnessRatings);
 
             return new OkObjectResult(dtos);
         }
@@ -56,11 +57,11 @@ public class WellnessRatingController : ControllerBase
     {
         try
         {
-            var _wellnessRating = _mapper.Map<WellnessRatingForCreation, Models.WellnessRating>(wellnessRatingDto);
+            var _wellnessRating = _mapper.Map<WellnessRatingForCreation, Data.WellnessRating>(wellnessRatingDto);
 
             _wellnessRatingService.Add(_wellnessRating);
 
-            var _wellnessRatingDto = _mapper.Map<Models.WellnessRating, Ascend_Server.api.Dto.WellnessRating>(_wellnessRating);
+            var _wellnessRatingDto = _mapper.Map<Data.WellnessRating,Dto.WellnessRating>(_wellnessRating);
 
             return CreatedAtAction(nameof(GetAll), new { id = _wellnessRatingDto.Id }, _wellnessRatingDto);
         }
@@ -80,11 +81,11 @@ public class WellnessRatingController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public IActionResult Update(Ascend_Server.api.Dto.WellnessRating wellnessRatingDto, Guid id)
+    public IActionResult Update(Dto.WellnessRating wellnessRatingDto, Guid id)
     {
         try
         {
-            var _wellnessRating = _mapper.Map<Ascend_Server.api.Dto.WellnessRating, Models.WellnessRating>(wellnessRatingDto);
+            var _wellnessRating = _mapper.Map<Dto.WellnessRating, Data.WellnessRating>(wellnessRatingDto);
 
             _wellnessRatingService.Update(_wellnessRating, id);
 

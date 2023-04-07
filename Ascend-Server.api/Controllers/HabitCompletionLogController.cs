@@ -1,7 +1,8 @@
-using Exceptions;
+using Data.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
-using Ascend_Server.api.Dto;
+using Dto;
+using IServices;
 
 namespace Controllers;
 
@@ -34,7 +35,7 @@ public class HabitCompletionLogController : ControllerBase
             {
                 return NotFound();
             }
-            var dtos = _mapper.Map<Models.HabitCompletionLog[], Ascend_Server.api.Dto.HabitCompletionLog[]>(habitCompletionLogs);
+            var dtos = _mapper.Map<Data.HabitCompletionLog[], Dto.HabitCompletionLog[]>(habitCompletionLogs);
 
             return new OkObjectResult(dtos);
         }
@@ -45,15 +46,15 @@ public class HabitCompletionLogController : ControllerBase
     }
 
     [HttpPost]
-    public IActionResult Create(Ascend_Server.api.Dto.HabitCompletionLogForCreation habitCompletionLogDto)
+    public IActionResult Create(Dto.HabitCompletionLogForCreation habitCompletionLogDto)
     {
         try
         {
-            var _habitCompletionLog = _mapper.Map<HabitCompletionLogForCreation, Models.HabitCompletionLog>(habitCompletionLogDto);
+            var _habitCompletionLog = _mapper.Map<HabitCompletionLogForCreation, Data.HabitCompletionLog>(habitCompletionLogDto);
 
             _habitCompletionLogService.Add(_habitCompletionLog);
 
-            var _habitCompletionLogDto = _mapper.Map<Models.HabitCompletionLog, Ascend_Server.api.Dto.HabitCompletionLog>(_habitCompletionLog);
+            var _habitCompletionLogDto = _mapper.Map<Data.HabitCompletionLog, Dto.HabitCompletionLog>(_habitCompletionLog);
 
             return CreatedAtAction(nameof(GetAll), new { id = _habitCompletionLogDto.Id }, _habitCompletionLogDto);
         }
@@ -76,11 +77,11 @@ public class HabitCompletionLogController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public IActionResult Update(Ascend_Server.api.Dto.HabitCompletionLog habitCompletionLogDto, Guid id)
+    public IActionResult Update(Dto.HabitCompletionLog habitCompletionLogDto, Guid id)
     {
         try
         {
-            var _habitCompletionLog = _mapper.Map<Ascend_Server.api.Dto.HabitCompletionLog, Models.HabitCompletionLog>(habitCompletionLogDto);
+            var _habitCompletionLog = _mapper.Map<Dto.HabitCompletionLog, Data.HabitCompletionLog>(habitCompletionLogDto);
 
             _habitCompletionLogService.Update(_habitCompletionLog, id);
 

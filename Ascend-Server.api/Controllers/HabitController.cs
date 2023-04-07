@@ -1,8 +1,8 @@
-using Exceptions;
+using Data.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
-using Ascend_Server.api.Dto;
-using Models;
+using Dto;
+using IServices; 
 
 namespace Controllers;
 
@@ -36,7 +36,7 @@ public class HabitController : ControllerBase
             {
                 return NotFound();
             }
-            var dtos = _mapper.Map<Models.Habit[], Ascend_Server.api.Dto.Habit[]>(habits);
+            var dtos = _mapper.Map<Data.Habit[], Dto.Habit[]>(habits);
 
             return new OkObjectResult(dtos);
         }
@@ -55,11 +55,11 @@ public class HabitController : ControllerBase
     {
         try
         {
-            var _habit = _mapper.Map<HabitForCreation, Models.Habit>(habitDto);
+            var _habit = _mapper.Map<HabitForCreation, Data.Habit>(habitDto);
 
             _habitService.Add(_habit);
 
-            var _habitDto = _mapper.Map<Models.Habit, Ascend_Server.api.Dto.Habit>(_habit);
+            var _habitDto = _mapper.Map<Data.Habit, Dto.Habit>(_habit);
 
             return CreatedAtAction(nameof(GetAll), new { id = _habitDto.Id }, _habitDto);
         }
@@ -71,11 +71,11 @@ public class HabitController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public IActionResult Update(Ascend_Server.api.Dto.Habit habitDto, Guid id)
+    public IActionResult Update(Dto.Habit habitDto, Guid id)
     {
         try
         {
-            var _habit = _mapper.Map<Ascend_Server.api.Dto.Habit, Models.Habit>(habitDto);
+            var _habit = _mapper.Map<Dto.Habit, Data.Habit>(habitDto);
 
             _habitService.Update(_habit, id);
 

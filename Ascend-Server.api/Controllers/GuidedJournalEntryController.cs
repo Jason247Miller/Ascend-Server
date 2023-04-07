@@ -1,7 +1,9 @@
-using Exceptions;
+using Data.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
-using Ascend_Server.api.Dto;
+using Dto;
+using IServices;
+
 
 namespace Controllers;
 
@@ -36,7 +38,7 @@ public class GuidedJournalEntryController : ControllerBase
                 return NotFound();
             }
 
-            var dtos = _mapper.Map<Models.GuidedJournalEntry[], Ascend_Server.api.Dto.GuidedJournalEntry[]>(guidedJournalEntries);
+            var dtos = _mapper.Map<Data.GuidedJournalEntry[], Dto.GuidedJournalEntry[]>(guidedJournalEntries);
 
             return new OkObjectResult(dtos);
         }
@@ -52,11 +54,11 @@ public class GuidedJournalEntryController : ControllerBase
     {
         try
         {
-            var _guidedJournalEntry = _mapper.Map<GuidedJournalEntryForCreation, Models.GuidedJournalEntry>(guidedJournalEntryDto);
+            var _guidedJournalEntry = _mapper.Map<GuidedJournalEntryForCreation, Data.GuidedJournalEntry>(guidedJournalEntryDto);
 
             _guidedJournalEntryService.Add(_guidedJournalEntry);
 
-            var _guidedJournalEntryDto = _mapper.Map<Models.GuidedJournalEntry, Ascend_Server.api.Dto.GuidedJournalEntry>(_guidedJournalEntry);
+            var _guidedJournalEntryDto = _mapper.Map<Data.GuidedJournalEntry,Dto.GuidedJournalEntry>(_guidedJournalEntry);
 
             return CreatedAtAction(nameof(GetAll), new { id = _guidedJournalEntryDto.Id }, _guidedJournalEntryDto);
         }
@@ -75,7 +77,7 @@ public class GuidedJournalEntryController : ControllerBase
     {
         try
         {
-            var _guidedJournalEntry = _mapper.Map<GuidedJournalEntry, Models.GuidedJournalEntry>(guidedJournalEntryDto);
+            var _guidedJournalEntry = _mapper.Map<GuidedJournalEntry, Data.GuidedJournalEntry>(guidedJournalEntryDto);
 
             _guidedJournalEntryService.Update(_guidedJournalEntry, id);
 

@@ -1,7 +1,8 @@
-using Exceptions;
+using Data.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
-using Ascend_Server.api.Dto;
+using Dto;
+using IServices;
 
 namespace Controllers;
 
@@ -36,7 +37,7 @@ public class GuidedJournalLogController : ControllerBase
             {
                 return NotFound();
             }
-            var dtos = _mapper.Map<Models.GuidedJournalLog[], Ascend_Server.api.Dto.GuidedJournalLog[]>(guidedJournalLogs);
+            var dtos = _mapper.Map<Data.GuidedJournalLog[], Dto.GuidedJournalLog[]>(guidedJournalLogs);
 
             return new OkObjectResult(dtos);
         }
@@ -51,11 +52,11 @@ public class GuidedJournalLogController : ControllerBase
     {
         try
         {
-            var _guidedJournalLog = _mapper.Map<GuidedJournalLogForCreation, Models.GuidedJournalLog>(guidedJournalLogDto);
+            var _guidedJournalLog = _mapper.Map<GuidedJournalLogForCreation, Data.GuidedJournalLog>(guidedJournalLogDto);
 
             _guidedJournalLogService.Add(_guidedJournalLog);
 
-            var _guidedJournalLogDto = _mapper.Map<Models.GuidedJournalLog, Ascend_Server.api.Dto.GuidedJournalLog>(_guidedJournalLog);
+            var _guidedJournalLogDto = _mapper.Map<Data.GuidedJournalLog, Dto.GuidedJournalLog>(_guidedJournalLog);
 
             return CreatedAtAction(nameof(GetAll), new { id = guidedJournalLogDto.Id }, guidedJournalLogDto);
         }
@@ -78,11 +79,11 @@ public class GuidedJournalLogController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public IActionResult Update(Ascend_Server.api.Dto.GuidedJournalLog guidedJournalLogDto, Guid id)
+    public IActionResult Update(Dto.GuidedJournalLog guidedJournalLogDto, Guid id)
     {
         try
         {
-            var _guidedJournalLog = _mapper.Map<Ascend_Server.api.Dto.GuidedJournalLog, Models.GuidedJournalLog>(guidedJournalLogDto);
+            var _guidedJournalLog = _mapper.Map<Dto.GuidedJournalLog, Data.GuidedJournalLog>(guidedJournalLogDto);
 
             _guidedJournalLogService.Update(_guidedJournalLog, id);
 

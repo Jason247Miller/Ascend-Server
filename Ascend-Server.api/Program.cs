@@ -1,7 +1,9 @@
 
 using Microsoft.EntityFrameworkCore;
-using Models;
-using Services;
+using Data;
+using IServices;
+using Services; 
+
 
 var builder = WebApplication.CreateBuilder(args);
 
