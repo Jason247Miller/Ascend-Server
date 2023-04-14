@@ -5,14 +5,29 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>Ascend_Server.api</RootNamespace>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <DocumentationFile></DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <NoWarn>1701;1702;CS1591</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <NoWarn>1701;1702;CS1591</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.5" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.3" />
 
     <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.27.0" />
+
+    <PackageReference Include="SwaggerEnrichers" Version="1.0.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.5.0" />
   </ItemGroup>
 
   <ItemGroup>

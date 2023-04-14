@@ -3,11 +3,14 @@ using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
 using Dto;
 using IServices;
+using Ascend_Server.api.ActionFilters;
 
 namespace Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/v{version:apiVersion}/[controller]")]
+[ServiceFilter(typeof(ModelStateActionFilter))]
+[ApiVersion("1.0")]
 public class HabitCompletionLogController : ControllerBase
 {
     private readonly IHabitCompletionLogService _habitCompletionLogService;
@@ -20,7 +23,10 @@ public class HabitCompletionLogController : ControllerBase
 
         _mapper = mapper;
     }
-
+    /// <summary>
+    /// GET endpoint to retrieve all habit completion logs for a specific user.
+    /// </summary>
+    /// <returns>Returns a list of habit completion logs for the user or returns NotFound if there are none.</returns>
     [HttpGet]
     public IActionResult GetAll()
     {
@@ -44,7 +50,11 @@ public class HabitCompletionLogController : ControllerBase
             return new BadRequestResult();
         }
     }
-
+    /// <summary>
+    /// POST endpoint to create a new habit completion log.
+    /// </summary>
+    /// <param name="habitCompletionLogDto">The habit completion log DTO to create.</param>
+    /// <returns>Returns CreatedAtAction with the created habit completion log DTO or BadRequestObjectResult with the error message if unsuccessful.</returns>
     [HttpPost]
     public IActionResult Create(Dto.HabitCompletionLogForCreation habitCompletionLogDto)
     {
@@ -75,7 +85,12 @@ public class HabitCompletionLogController : ControllerBase
             return new BadRequestResult();
         }
     }
-
+    /// <summary>
+    /// PUT endpoint to update an existing habit completion log.
+    /// </summary>
+    /// <param name="habitCompletionLogDto">The updated habit completion log DTO.</param>
+    /// <param name="id">The id of the habit completion log to update.</param>
+    /// <returns>Returns NoContent if successful or BadRequestObjectResult with the error message if unsuccessful.</returns>
     [HttpPut("{id}")]
     public IActionResult Update(Dto.HabitCompletionLog habitCompletionLogDto, Guid id)
     {

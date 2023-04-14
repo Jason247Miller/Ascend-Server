@@ -1,12 +1,12 @@
+using Ascend_Server.api.ActionFilters;
 using Data;
 using IServices;
-using Services;
-using Data.Exceptions;
 using Microsoft.AspNetCore.Mvc;
-using Dto;
 
-[Route("api/[controller]")]
 [ApiController]
+[Route("api/v{version:apiVersion}/[controller]")]
+[ServiceFilter(typeof(ModelStateActionFilter))]
+[ApiVersion("1.0")]
 public class LoginController : ControllerBase
 {
     private readonly IUserService _userService;
@@ -15,7 +15,13 @@ public class LoginController : ControllerBase
     {
         _userService = userService;
     }
-
+    /// <summary>
+    /// Authenticates a user with their email and password, and returns an access token.
+    /// </summary>
+    /// <param name="request">The login request containing the user's email and password.</param>
+    /// <returns>A <see cref="LoginResponse"/> object containing an access token if the user is authenticated.</returns>
+    /// <response code="200">Returns a <see cref="LoginResponse"/> object containing an access token.</response>
+    /// <response code="401">Returns an unauthorized error if the user is not authenticated.</response>
     [HttpPost]
     public IActionResult Post(LoginRequest request)
     {
