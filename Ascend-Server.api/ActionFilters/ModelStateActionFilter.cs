@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc;
 
-
 //Action Filter to aggregate all model state validation errors into http response
-
 namespace Ascend_Server.api.ActionFilters
 {
     public class ModelStateActionFilter : IActionFilter

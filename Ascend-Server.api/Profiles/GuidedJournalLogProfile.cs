@@ -1,8 +1,6 @@
 ﻿using Dto;
 using AutoMapper;
 
-
-
 namespace profiles;
 
 public class GuidedJournalLogProfile : Profile

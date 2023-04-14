@@ -1,7 +1,6 @@
 ﻿using Dto;
 using AutoMapper;
 
-
 namespace profiles;
 
 public class HabitProfile : Profile
