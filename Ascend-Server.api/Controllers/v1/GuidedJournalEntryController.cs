@@ -5,6 +5,7 @@ using Dto;
 using IServices;
 using Ascend_Server.api.ActionFilters;
 using Microsoft.AspNetCore.Authorization;
+using Services;
 
 namespace Controllers;
 
@@ -26,19 +27,42 @@ public class GuidedJournalEntryController : ControllerBase
 
         _mapper = mapper;
     }
+    /// <summary>
+    /// Retrieves a single Guided Journal Entry that matches the passed id.
+    /// </summary>
+    /// <returns>
+    /// Returns a single instance of type <see cref="Dto.GuidedJournalEntry"/> object matching the id passed.
+    /// </returns>
+    /// <response code="200">Returns the Guided Journal Entry.</response>
+    /// <response code="400">The request was invalid.</response>
+    /// <response code="404">No guided journal entry found for id.</response>
+    /// 
+    [HttpGet("id/{id}")]
+    public ActionResult<Dto.GuidedJournalEntry> GetById(Guid id)
+    {
+        try
+        {
+            var guidedJournalEntry = _guidedJournalEntryService.GetById(id);
 
+            var dto = _mapper.Map<Data.GuidedJournalEntry, Dto.GuidedJournalEntry>(guidedJournalEntry);
+
+            return new OkObjectResult(dto);
+        }
+        catch (NotFoundException e)
+        {
+            return NotFound(e.Message);
+        }
+
+    }
     /// <summary>
     /// Gets all guided journal entries for the authenticated user.
     /// </summary>
     /// <returns>A list of GuidedJournalEntry DTOs if successful, or a NotFoundResult if no entries were found.</returns>
     /// <response code="200">Returns a list of GuidedJournalEntry DTOs if successful.</response>
     /// <response code="404">If no entries were found for the authenticated user.</response>
-    [HttpGet]
-    public IActionResult GetAll()
+    [HttpGet("userId/{userId}")]
+    public IActionResult GetAll(Guid userId)
     {
-        // will get from auth service later
-        Guid userId = Guid.Parse("f2d1b702-c81a-11ed-afa1-0242ac120002");
-
         try
         {
             var guidedJournalEntries = _guidedJournalEntryService.GetAllForUserId(userId);
@@ -78,12 +102,13 @@ public class GuidedJournalEntryController : ControllerBase
 
             var _guidedJournalEntryDto = _mapper.Map<Data.GuidedJournalEntry, Dto.GuidedJournalEntry>(_guidedJournalEntry);
 
-            return CreatedAtAction(nameof(GetAll), new { id = guidedJournalEntryDto.Id }, guidedJournalEntryDto);
+            return CreatedAtAction(nameof(GetById), new { id = _guidedJournalEntryDto.Id }, _guidedJournalEntryDto);
         }
-        catch (Exception)
+        catch (System.FormatException e)
         {
-            return new BadRequestResult();
+            return new BadRequestObjectResult(e.Message);
         }
+
     }
 
     /// <summary>
@@ -105,10 +130,11 @@ public class GuidedJournalEntryController : ControllerBase
 
             return NoContent();
         }
-        catch (Exception)
+        catch (System.FormatException e)
         {
-            return new BadRequestResult();
+            return new BadRequestObjectResult(e.Message);
         }
+
     }
     /// <summary>
     /// Deletes a GuidedJournalEntry for the given id.
@@ -118,13 +144,13 @@ public class GuidedJournalEntryController : ControllerBase
     /// <response code="204">The GuidedJournalEntry was deleted successfully.</response>
     /// <response code="400">The request was invalid or the GuidedJournalEntry was not found.</response>
     [HttpDelete("{id}")]
-    public IActionResult Delete(Dto.GuidedJournalEntry guidedJournalEntryDto, Guid id)
+    public IActionResult Delete(Guid id)
     {
         try
         {
-            var _guidedJournalEntry = _mapper.Map<Dto.GuidedJournalEntry, Data.GuidedJournalEntry>(guidedJournalEntryDto);
+          //  var _guidedJournalEntry = _mapper.Map<Dto.GuidedJournalEntry, Data.GuidedJournalEntry>(guidedJournalEntryDto);
 
-            _guidedJournalEntryService.Delete(_guidedJournalEntry, id);
+            _guidedJournalEntryService.Delete(id);
 
             return NoContent();
         }

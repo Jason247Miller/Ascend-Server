@@ -4,9 +4,12 @@ using AutoMapper;
 using Dto;
 using IServices;
 using Ascend_Server.api.ActionFilters;
+using Microsoft.AspNetCore.Authorization;
+using Services;
 
 namespace Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
 [ServiceFilter(typeof(ModelStateActionFilter))]
@@ -24,18 +27,43 @@ public class GuidedJournalLogController : ControllerBase
 
         _mapper = mapper;
     }
+
+    /// <summary>
+    /// Retrieves a single Guided Journal Log that matches the passed id.
+    /// </summary>
+    /// <returns>
+    /// Returns a single instance of type <see cref="Dto.GuidedJournalLog"/> object matching the id passed.
+    /// </returns>
+    /// <response code="200">Returns the Guided Journal Log.</response>
+    /// <response code="400">The request was invalid.</response>
+    /// <response code="404">No guided journal Log found for id.</response>
+    /// 
+    [HttpGet("id/{id}")]
+    public ActionResult<Dto.GuidedJournalLog> GetById(Guid id)
+    {
+        try
+        {
+            var guidedJournalLog = _guidedJournalLogService.GetById(id);
+
+            var dto = _mapper.Map<Data.GuidedJournalLog, Dto.GuidedJournalLog>(guidedJournalLog);
+
+            return new OkObjectResult(dto);
+        }
+        catch (NotFoundException e)
+        {
+            return NotFound(e.Message);
+        }
+
+    }
     /// <summary>
     /// Gets all the guided journal logs for a user.
     /// </summary>
     /// <response code="200">Returns a list of all the guided journal logs for the user.</response>
     /// <response code="404">If there are no guided journal logs for the user.</response>
     /// <response code="400">If there is an error while retrieving the guided journal logs.</response>
-    [HttpGet]
-    public IActionResult GetAll()
+    [HttpGet("userId/{userId}")]
+    public IActionResult GetAll(Guid userId)
     {
-
-        // will get from auth service later
-        Guid userId = Guid.Parse("f2d1b702-c81a-11ed-afa1-0242ac120002");
 
         try
         {
@@ -72,7 +100,7 @@ public class GuidedJournalLogController : ControllerBase
 
             var _guidedJournalLogDto = _mapper.Map<Data.GuidedJournalLog, Dto.GuidedJournalLog>(_guidedJournalLog);
 
-            return CreatedAtAction(nameof(GetAll), new { id = guidedJournalLogDto.Id }, guidedJournalLogDto);
+            return CreatedAtAction(nameof(GetById), new { id = _guidedJournalLogDto.Id }, _guidedJournalLogDto);
         }
         catch (UserDoesNotExistException e)
         {
@@ -86,10 +114,11 @@ public class GuidedJournalLogController : ControllerBase
         {
             return new BadRequestObjectResult(e.Message);
         }
-        catch (Exception)
+        catch (System.FormatException e)
         {
-            return new BadRequestResult();
+            return new BadRequestObjectResult(e.Message);
         }
+
     }
     /// <summary>
     /// Updates a guided journal log by ID.
@@ -113,10 +142,11 @@ public class GuidedJournalLogController : ControllerBase
         {
             return new BadRequestObjectResult(e.Message);
         }
-        catch (Exception)
+        catch (System.FormatException e)
         {
-            return new BadRequestResult();
+            return new BadRequestObjectResult(e.Message);
         }
+
     }
 
 }

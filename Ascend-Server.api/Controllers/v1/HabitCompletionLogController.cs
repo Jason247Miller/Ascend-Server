@@ -4,9 +4,12 @@ using AutoMapper;
 using Dto;
 using IServices;
 using Ascend_Server.api.ActionFilters;
+using Microsoft.AspNetCore.Authorization;
+using Services;
 
 namespace Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
 [ServiceFilter(typeof(ModelStateActionFilter))]
@@ -24,14 +27,40 @@ public class HabitCompletionLogController : ControllerBase
         _mapper = mapper;
     }
     /// <summary>
+    /// Retrieves a single Habit Completion Log that matches the passed id.
+    /// </summary>
+    /// <returns>
+    /// Returns a single instance of type <see cref="Dto.HabitCompletionLog"/> object matching the id passed.
+    /// </returns>
+    /// <response code="200">Returns the Habit Completion Log.</response>
+    /// <response code="400">The request was invalid.</response>
+    /// <response code="404">No Habit Completion Log found for id.</response>
+    
+    [HttpGet("id/{id}")]
+    public ActionResult<Dto.HabitCompletionLog> GetById(Guid id)
+    {
+        try
+        {
+            var habitCompletionLog = _habitCompletionLogService.GetById(id);
+
+            var dto = _mapper.Map<Data.HabitCompletionLog, Dto.HabitCompletionLog>(habitCompletionLog);
+
+            return new OkObjectResult(dto);
+        }
+        catch (NotFoundException e)
+        {
+            return NotFound(e.Message);
+        }
+
+    }
+
+    /// <summary>
     /// GET endpoint to retrieve all habit completion logs for a specific user.
     /// </summary>
     /// <returns>Returns a list of habit completion logs for the user or returns NotFound if there are none.</returns>
-    [HttpGet]
-    public IActionResult GetAll()
+    [HttpGet("userId/{userId}")]
+    public IActionResult GetAll(Guid userId)
     {
-        // will get from auth service later
-        Guid userId = Guid.Parse("f2d1b702-c81a-11ed-afa1-0242ac120002");
 
         try
         {
@@ -66,7 +95,7 @@ public class HabitCompletionLogController : ControllerBase
 
             var _habitCompletionLogDto = _mapper.Map<Data.HabitCompletionLog, Dto.HabitCompletionLog>(_habitCompletionLog);
 
-            return CreatedAtAction(nameof(GetAll), new { id = _habitCompletionLogDto.Id }, _habitCompletionLogDto);
+            return CreatedAtAction(nameof(GetById), new { id = _habitCompletionLogDto.Id }, _habitCompletionLogDto);
         }
         catch (SameDateException e)
         {
@@ -80,10 +109,11 @@ public class HabitCompletionLogController : ControllerBase
         {
             return new BadRequestObjectResult(e.Message);
         }
-        catch (Exception)
+        catch (System.FormatException e)
         {
-            return new BadRequestResult();
+            return new BadRequestObjectResult(e.Message);
         }
+
     }
     /// <summary>
     /// PUT endpoint to update an existing habit completion log.
@@ -106,10 +136,11 @@ public class HabitCompletionLogController : ControllerBase
         {
             return new BadRequestObjectResult(e.Message);
         }
-        catch (Exception)
+        catch (System.FormatException e)
         {
-            return new BadRequestResult();
+            return new BadRequestObjectResult(e.Message);
         }
+
     }
 
 }

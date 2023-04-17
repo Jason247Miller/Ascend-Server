@@ -4,9 +4,12 @@ using AutoMapper;
 using Dto;
 using IServices;
 using Ascend_Server.api.ActionFilters;
+using Microsoft.AspNetCore.Authorization;
+using Services;
 
 namespace Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
 [ServiceFilter(typeof(ModelStateActionFilter))]
@@ -25,17 +28,42 @@ public class HabitController : ControllerBase
         _mapper = mapper;
     }
     /// <summary>
+    /// Retrieves a single Habit that matches the passed id.
+    /// </summary>
+    /// <returns>
+    /// Returns a single instance of type <see cref="Dto.Habit"/> object matching the id passed.
+    /// </returns>
+    /// <response code="200">Returns the Habit.</response>
+    /// <response code="400">The request was invalid.</response>
+    /// <response code="404">No Habit found for id.</response>
+
+    [HttpGet("id/{id}")]
+    public ActionResult<Dto.Habit> GetById(Guid id)
+    {
+        try
+        {
+            var habit = _habitService.GetById(id);
+
+            var dto = _mapper.Map<Data.Habit, Dto.Habit>(habit);
+
+            return new OkObjectResult(dto);
+        }
+        catch (NotFoundException e)
+        {
+            return NotFound(e.Message);
+        }
+
+    }
+    /// <summary>
     /// Retrieves all habits for the user.
     /// </summary>
     /// <returns>A list of habits.</returns>
     /// <response code="200">Returns the list of habits.</response>
     /// <response code="400">If the user does not exist or there is a bad request.</response>
     /// <response code="404">If there are no habits found.</response>
-    [HttpGet]
-    public IActionResult GetAll()
+    [HttpGet("userId/{userId}")]
+    public IActionResult GetAll(Guid userId)
     {
-        // will get from auth service later
-        Guid userId = Guid.Parse("f2d1b702-c81a-11ed-afa1-0242ac120002");
 
         try
         {
@@ -77,12 +105,13 @@ public class HabitController : ControllerBase
 
             var _habitDto = _mapper.Map<Data.Habit, Dto.Habit>(_habit);
 
-            return CreatedAtAction(nameof(GetAll), new { id = _habitDto.Id }, _habitDto);
+            return CreatedAtAction(nameof(GetById), new { id = _habitDto.Id }, _habitDto);
         }
-        catch (Exception)
+        catch (System.FormatException e)
         {
-            return StatusCode(500, "Internal server error");
+            return new BadRequestObjectResult(e.Message);
         }
+
 
     }
     /// <summary>
@@ -108,10 +137,11 @@ public class HabitController : ControllerBase
         {
             return new BadRequestObjectResult(e.Message);
         }
-        catch (Exception)
+        catch (System.FormatException e)
         {
-            return new BadRequestResult();
+            return new BadRequestObjectResult(e.Message);
         }
+
     }
     /// <summary>
     /// Deletes an existing habit.
@@ -122,13 +152,11 @@ public class HabitController : ControllerBase
     /// <response code="204">If the habit was deleted successfully.</response>
     /// <response code="400">If the habit does not exist or there is a bad request.</response>
     [HttpDelete("{id}")]
-    public IActionResult Delete(Dto.Habit habitDto, Guid id)
+    public IActionResult Delete(Guid id)
     {
         try
         {
-            var _habit = _mapper.Map<Dto.Habit, Data.Habit>(habitDto);
-
-            _habitService.Delete(_habit, id);
+            _habitService.Delete(id);
 
             return NoContent();
         }

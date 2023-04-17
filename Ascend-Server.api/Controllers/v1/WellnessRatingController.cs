@@ -5,9 +5,11 @@ using AutoMapper;
 using Dto;
 using IServices;
 using Ascend_Server.api.ActionFilters;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
 [ServiceFilter(typeof(ModelStateActionFilter))]
@@ -25,6 +27,35 @@ public class WellnessRatingController : ControllerBase
 
         _mapper = mapper;
     }
+
+    /// <summary>
+    /// Retrieves a single Wellness Rating that matches the passed id.
+    /// </summary>
+    /// <returns>
+    /// Returns a single instance of type <see cref="Dto.WellnessRating"/> object matching the id passed.
+    /// </returns>
+    /// <response code="200">Returns the wellness rating.</response>
+    /// <response code="400">The request was invalid.</response>
+    /// <response code="404">No wellness rating found for id.</response>
+    /// 
+    [HttpGet("id/{id}")]
+    public ActionResult<Dto.WellnessRating> GetById(Guid id)
+    {
+        try
+        {
+            var wellnessRating = _wellnessRatingService.GetById(id);
+           
+            var dto = _mapper.Map<Data.WellnessRating, Dto.WellnessRating>(wellnessRating);
+
+            return new OkObjectResult(dto);
+        }
+        catch (NotFoundException e)
+        {
+            return  NotFound(e.Message);
+        }    
+
+    }
+
     /// <summary>
     /// Retrieves all wellness ratings for the currently authenticated user.
     /// </summary>
@@ -34,11 +65,12 @@ public class WellnessRatingController : ControllerBase
     /// <response code="200">Returns the wellness ratings.</response>
     /// <response code="400">The request was invalid.</response>
     /// <response code="404">No wellness ratings were found.</response>
-    [HttpGet]
-    public IActionResult GetAll()
+    /// 
+    [HttpGet("userId/{userId}")]
+    public IActionResult GetAllForUserId(Guid userId)
     {
         //get later from auth service 
-        Guid userId = Guid.Parse("f2d1b702-c81a-11ed-afa1-0242ac120002");
+       // Guid userId = Guid.Parse("f2d1b702-c81a-11ed-afa1-0242ac120002");
 
         try
         {
@@ -72,30 +104,28 @@ public class WellnessRatingController : ControllerBase
     /// <response code="201">The wellness rating was successfully created.</response>
     /// <response code="400">The request was invalid.</response>
     [HttpPost]
-    public IActionResult Create(WellnessRatingForCreation wellnessRatingDto)
+    [ActionName(nameof(Create))]
+    public IActionResult Create(Dto.WellnessRatingForCreation wellnessRatingDto)
     {
         try
         {
-            var _wellnessRating = _mapper.Map<WellnessRatingForCreation, Data.WellnessRating>(wellnessRatingDto);
+            var _wellnessRating = _mapper.Map<Dto.WellnessRatingForCreation, Data.WellnessRating>(wellnessRatingDto);
 
             _wellnessRatingService.Add(_wellnessRating);
 
             var _wellnessRatingDto = _mapper.Map<Data.WellnessRating, Dto.WellnessRating>(_wellnessRating);
 
-            return CreatedAtAction(nameof(GetAll), new { id = _wellnessRatingDto.Id }, _wellnessRatingDto);
+            return CreatedAtAction(nameof(GetById), new { id = _wellnessRatingDto.Id}, _wellnessRatingDto);
         }
         catch (SameDateException e)
         {
             return new BadRequestObjectResult(e.Message);
         }
-        catch (UserDoesNotExistException e)
+        catch(System.FormatException e)
         {
-            return new BadRequestObjectResult(e.Message);
+            return new BadRequestObjectResult(e.Message); 
         }
-        catch (Exception)
-        {
-            return new BadRequestResult();
-        }
+ 
 
     }
     /// <summary>
@@ -120,10 +150,11 @@ public class WellnessRatingController : ControllerBase
         {
             return new BadRequestObjectResult(e.Message);
         }
-        catch (Exception)
+        catch (System.FormatException e)
         {
-            return new BadRequestResult();
+            return new BadRequestObjectResult(e.Message);
         }
+
     }
 
 }
