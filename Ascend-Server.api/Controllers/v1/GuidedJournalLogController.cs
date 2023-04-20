@@ -5,7 +5,6 @@ using Dto;
 using IServices;
 using Ascend_Server.api.ActionFilters;
 using Microsoft.AspNetCore.Authorization;
-using Services;
 
 namespace Controllers;
 
@@ -47,14 +46,19 @@ public class GuidedJournalLogController : ControllerBase
 
             var dto = _mapper.Map<Data.GuidedJournalLog, Dto.GuidedJournalLog>(guidedJournalLog);
 
-            return new OkObjectResult(dto);
+            return Ok(dto);
         }
         catch (NotFoundException e)
         {
             return NotFound(e.Message);
         }
+        catch (Exception)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
 
     }
+
     /// <summary>
     /// Gets all the guided journal logs for a user.
     /// </summary>
@@ -62,26 +66,26 @@ public class GuidedJournalLogController : ControllerBase
     /// <response code="404">If there are no guided journal logs for the user.</response>
     /// <response code="400">If there is an error while retrieving the guided journal logs.</response>
     [HttpGet("userId/{userId}")]
-    public IActionResult GetAll(Guid userId)
+    public ActionResult<IEnumerable<Dto.GuidedJournalLog>> GetAllForUserId(Guid userId)
     {
-
         try
         {
             var guidedJournalLogs = _guidedJournalLogService.GetAllForUserId(userId);
 
-            if (guidedJournalLogs == null)
+            if (!guidedJournalLogs.Any())
             {
-                return NotFound();
+                return NotFound(new { message = "No Guided Journal Logs exists." });
             }
-            var dtos = _mapper.Map<Data.GuidedJournalLog[], Dto.GuidedJournalLog[]>(guidedJournalLogs);
+            var dtos = _mapper.Map<IEnumerable<Data.GuidedJournalLog>, IEnumerable<Dto.GuidedJournalLog>>(guidedJournalLogs);
 
-            return new OkObjectResult(dtos);
+            return Ok(dtos);
         }
         catch (Exception)
         {
-            return new BadRequestResult();
+            return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
+
     /// <summary>
     /// Creates a new guided journal log for the currently authenticated user.
     /// </summary>
@@ -90,7 +94,7 @@ public class GuidedJournalLogController : ControllerBase
     /// <response code="201">Returns the newly created guided journal log.</response>
     /// <response code="400">If the guided journal log data is invalid or the creation was unsuccessful.</response>
     [HttpPost]
-    public IActionResult Create(GuidedJournalLogForCreation guidedJournalLogDto)
+    public ActionResult Create(GuidedJournalLogForCreation guidedJournalLogDto)
     {
         try
         {
@@ -104,22 +108,27 @@ public class GuidedJournalLogController : ControllerBase
         }
         catch (UserDoesNotExistException e)
         {
-            return new BadRequestObjectResult(e.Message);
+            return BadRequest(e.Message);
         }
         catch (SameDateException e)
         {
-            return new BadRequestObjectResult(e.Message);
+            return BadRequest(e.Message);
         }
         catch (NotFoundException e)
         {
-            return new BadRequestObjectResult(e.Message);
+            return BadRequest(e.Message);
         }
         catch (System.FormatException e)
         {
-            return new BadRequestObjectResult(e.Message);
+            return BadRequest(e.Message);
+        }
+        catch (Exception)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError);
         }
 
     }
+
     /// <summary>
     /// Updates a guided journal log by ID.
     /// </summary>
@@ -128,7 +137,7 @@ public class GuidedJournalLogController : ControllerBase
     /// <response code="204">Indicates the guided journal log was successfully updated.</response>
     /// <response code="400">Indicates a bad request was received or the guided journal log was not found.</response>
     [HttpPut("{id}")]
-    public IActionResult Update(Dto.GuidedJournalLog guidedJournalLogDto, Guid id)
+    public ActionResult Update(Dto.GuidedJournalLog guidedJournalLogDto, Guid id)
     {
         try
         {
@@ -140,13 +149,16 @@ public class GuidedJournalLogController : ControllerBase
         }
         catch (NotFoundException e)
         {
-            return new BadRequestObjectResult(e.Message);
+            return BadRequest(e.Message);
         }
         catch (System.FormatException e)
         {
-            return new BadRequestObjectResult(e.Message);
+            return BadRequest(e.Message);
         }
-
+        catch (Exception)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
     }
 
 }

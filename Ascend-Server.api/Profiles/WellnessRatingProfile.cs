@@ -11,6 +11,7 @@ public class WellnessRatingProfile : Profile
         CreateMap<Data.WellnessRating, Dto.WellnessRating>();
 
         CreateMap<Dto.WellnessRating, Data.WellnessRating>();
+
     }
 }
 

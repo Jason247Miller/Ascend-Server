@@ -5,7 +5,6 @@ using Dto;
 using IServices;
 using Ascend_Server.api.ActionFilters;
 using Microsoft.AspNetCore.Authorization;
-using Services;
 
 namespace Controllers;
 
@@ -26,6 +25,7 @@ public class HabitCompletionLogController : ControllerBase
 
         _mapper = mapper;
     }
+
     /// <summary>
     /// Retrieves a single Habit Completion Log that matches the passed id.
     /// </summary>
@@ -35,7 +35,6 @@ public class HabitCompletionLogController : ControllerBase
     /// <response code="200">Returns the Habit Completion Log.</response>
     /// <response code="400">The request was invalid.</response>
     /// <response code="404">No Habit Completion Log found for id.</response>
-    
     [HttpGet("id/{id}")]
     public ActionResult<Dto.HabitCompletionLog> GetById(Guid id)
     {
@@ -45,11 +44,15 @@ public class HabitCompletionLogController : ControllerBase
 
             var dto = _mapper.Map<Data.HabitCompletionLog, Dto.HabitCompletionLog>(habitCompletionLog);
 
-            return new OkObjectResult(dto);
+            return Ok(dto);
         }
         catch (NotFoundException e)
         {
             return NotFound(e.Message);
+        }
+        catch (Exception)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError);
         }
 
     }
@@ -59,24 +62,23 @@ public class HabitCompletionLogController : ControllerBase
     /// </summary>
     /// <returns>Returns a list of habit completion logs for the user or returns NotFound if there are none.</returns>
     [HttpGet("userId/{userId}")]
-    public IActionResult GetAll(Guid userId)
+    public ActionResult<IEnumerable<HabitCompletionLog>> GetAllForUserId(Guid userId)
     {
-
         try
         {
             var habitCompletionLogs = _habitCompletionLogService.GetAllForUserId(userId);
 
-            if (habitCompletionLogs == null)
+            if (!habitCompletionLogs.Any())
             {
-                return NotFound();
+                return NotFound(new { message = "No Habit Logs exists." });
             }
-            var dtos = _mapper.Map<Data.HabitCompletionLog[], Dto.HabitCompletionLog[]>(habitCompletionLogs);
+            var dtos = _mapper.Map<IEnumerable<Data.HabitCompletionLog>, IEnumerable<Dto.HabitCompletionLog>>(habitCompletionLogs);
 
-            return new OkObjectResult(dtos);
+            return Ok(dtos);
         }
         catch (Exception)
         {
-            return new BadRequestResult();
+            return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
     /// <summary>
@@ -85,7 +87,7 @@ public class HabitCompletionLogController : ControllerBase
     /// <param name="habitCompletionLogDto">The habit completion log DTO to create.</param>
     /// <returns>Returns CreatedAtAction with the created habit completion log DTO or BadRequestObjectResult with the error message if unsuccessful.</returns>
     [HttpPost]
-    public IActionResult Create(Dto.HabitCompletionLogForCreation habitCompletionLogDto)
+    public ActionResult Create(Dto.HabitCompletionLogForCreation habitCompletionLogDto)
     {
         try
         {
@@ -94,27 +96,31 @@ public class HabitCompletionLogController : ControllerBase
             _habitCompletionLogService.Add(_habitCompletionLog);
 
             var _habitCompletionLogDto = _mapper.Map<Data.HabitCompletionLog, Dto.HabitCompletionLog>(_habitCompletionLog);
-
+            Console.WriteLine("Habit has been Added"); 
             return CreatedAtAction(nameof(GetById), new { id = _habitCompletionLogDto.Id }, _habitCompletionLogDto);
         }
         catch (SameDateException e)
         {
-            return new BadRequestObjectResult(e.Message);
+            return BadRequest(e.Message);
         }
         catch (UserDoesNotExistException e)
         {
-            return new BadRequestObjectResult(e.Message);
+            return BadRequest(e.Message);
         }
         catch (NotFoundException e)
         {
-            return new BadRequestObjectResult(e.Message);
+            return BadRequest(e.Message);
         }
         catch (System.FormatException e)
         {
-            return new BadRequestObjectResult(e.Message);
+            return BadRequest(e.Message);
         }
-
+        catch (Exception)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
     }
+
     /// <summary>
     /// PUT endpoint to update an existing habit completion log.
     /// </summary>
@@ -122,25 +128,30 @@ public class HabitCompletionLogController : ControllerBase
     /// <param name="id">The id of the habit completion log to update.</param>
     /// <returns>Returns NoContent if successful or BadRequestObjectResult with the error message if unsuccessful.</returns>
     [HttpPut("{id}")]
-    public IActionResult Update(Dto.HabitCompletionLog habitCompletionLogDto, Guid id)
+    public ActionResult Update(Dto.HabitCompletionLog habitCompletionLogDto, Guid id)
     {
         try
         {
+
             var _habitCompletionLog = _mapper.Map<Dto.HabitCompletionLog, Data.HabitCompletionLog>(habitCompletionLogDto);
+           
 
             _habitCompletionLogService.Update(_habitCompletionLog, id);
-
+            Console.WriteLine("habit updated successfully");
             return NoContent();
         }
         catch (NotFoundException e)
         {
-            return new BadRequestObjectResult(e.Message);
+            return BadRequest(e.Message);
         }
         catch (System.FormatException e)
         {
-            return new BadRequestObjectResult(e.Message);
+            return BadRequest(e.Message);
         }
-
+        catch (Exception)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
     }
 
 }

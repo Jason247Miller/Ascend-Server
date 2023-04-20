@@ -5,7 +5,6 @@ using Dto;
 using IServices;
 using Ascend_Server.api.ActionFilters;
 using Microsoft.AspNetCore.Authorization;
-using Services;
 
 namespace Controllers;
 
@@ -27,6 +26,7 @@ public class GuidedJournalEntryController : ControllerBase
 
         _mapper = mapper;
     }
+
     /// <summary>
     /// Retrieves a single Guided Journal Entry that matches the passed id.
     /// </summary>
@@ -46,14 +46,18 @@ public class GuidedJournalEntryController : ControllerBase
 
             var dto = _mapper.Map<Data.GuidedJournalEntry, Dto.GuidedJournalEntry>(guidedJournalEntry);
 
-            return new OkObjectResult(dto);
+            return Ok(dto);
         }
         catch (NotFoundException e)
         {
             return NotFound(e.Message);
         }
-
+        catch (Exception)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
     }
+
     /// <summary>
     /// Gets all guided journal entries for the authenticated user.
     /// </summary>
@@ -61,27 +65,28 @@ public class GuidedJournalEntryController : ControllerBase
     /// <response code="200">Returns a list of GuidedJournalEntry DTOs if successful.</response>
     /// <response code="404">If no entries were found for the authenticated user.</response>
     [HttpGet("userId/{userId}")]
-    public IActionResult GetAll(Guid userId)
+    public ActionResult GetAllForUserId(Guid userId)
     {
         try
         {
             var guidedJournalEntries = _guidedJournalEntryService.GetAllForUserId(userId);
 
-            if (guidedJournalEntries == null)
+            if (!guidedJournalEntries.Any())
             {
-                return NotFound();
+                return NotFound(new { message = "No Guided Journal Entries exists." });
             }
 
-            var dtos = _mapper.Map<Data.GuidedJournalEntry[], Dto.GuidedJournalEntry[]>(guidedJournalEntries);
+            var dtos = _mapper.Map<IEnumerable<Data.GuidedJournalEntry>, IEnumerable<Dto.GuidedJournalEntry>>(guidedJournalEntries);
 
-            return new OkObjectResult(dtos);
+            return Ok(dtos);
         }
         catch (Exception)
         {
-            return new BadRequestResult();
+            return StatusCode(StatusCodes.Status500InternalServerError);
         }
 
     }
+
     /// <summary>
     /// Creates a new GuidedJournalEntry based on the provided DTO.
     /// </summary>
@@ -90,12 +95,10 @@ public class GuidedJournalEntryController : ControllerBase
     /// <response code="201">Returns the created GuidedJournalEntry DTO if successful.</response>
     /// <response code="400">If an error occurred while creating the new entry.</response>
     [HttpPost]
-    public IActionResult Create(GuidedJournalEntryForCreation guidedJournalEntryDto)
+    public ActionResult Create(GuidedJournalEntryForCreation guidedJournalEntryDto)
     {
-
         try
         {
-
             var _guidedJournalEntry = _mapper.Map<GuidedJournalEntryForCreation, Data.GuidedJournalEntry>(guidedJournalEntryDto);
 
             _guidedJournalEntryService.Add(_guidedJournalEntry);
@@ -106,7 +109,11 @@ public class GuidedJournalEntryController : ControllerBase
         }
         catch (System.FormatException e)
         {
-            return new BadRequestObjectResult(e.Message);
+            return BadRequest(e.Message);
+        }
+        catch (Exception)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError);
         }
 
     }
@@ -120,7 +127,7 @@ public class GuidedJournalEntryController : ControllerBase
     /// <response code="204">If the entry was updated successfully.</response>
     /// <response code="400">If an error occurred while updating the entry.</response>
     [HttpPut("{id}")]
-    public IActionResult Update(GuidedJournalEntry guidedJournalEntryDto, Guid id)
+    public ActionResult Update(GuidedJournalEntry guidedJournalEntryDto, Guid id)
     {
         try
         {
@@ -132,35 +139,37 @@ public class GuidedJournalEntryController : ControllerBase
         }
         catch (System.FormatException e)
         {
-            return new BadRequestObjectResult(e.Message);
+            return BadRequest(e.Message);
+        }
+        catch (Exception)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError);
         }
 
     }
+
     /// <summary>
     /// Deletes a GuidedJournalEntry for the given id.
     /// </summary>
     /// <param name="id">The id of the GuidedJournalEntry to delete.</param>
-    /// <param name="guidedJournalEntryDto">The GuidedJournalEntry DTO.</param>
     /// <response code="204">The GuidedJournalEntry was deleted successfully.</response>
     /// <response code="400">The request was invalid or the GuidedJournalEntry was not found.</response>
     [HttpDelete("{id}")]
-    public IActionResult Delete(Guid id)
+    public ActionResult Delete(Guid id)
     {
         try
         {
-          //  var _guidedJournalEntry = _mapper.Map<Dto.GuidedJournalEntry, Data.GuidedJournalEntry>(guidedJournalEntryDto);
-
             _guidedJournalEntryService.Delete(id);
 
             return NoContent();
         }
         catch (NotFoundException e)
         {
-            return new BadRequestObjectResult(e.Message);
+            return BadRequest(e.Message);
         }
         catch (Exception)
         {
-            return new BadRequestResult();
+            return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
 }

@@ -1,4 +1,3 @@
-using Data;
 using Data.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
@@ -44,15 +43,19 @@ public class WellnessRatingController : ControllerBase
         try
         {
             var wellnessRating = _wellnessRatingService.GetById(id);
-           
+
             var dto = _mapper.Map<Data.WellnessRating, Dto.WellnessRating>(wellnessRating);
 
-            return new OkObjectResult(dto);
+            return Ok(dto);
         }
         catch (NotFoundException e)
         {
-            return  NotFound(e.Message);
-        }    
+            return NotFound(e.Message);
+        }
+        catch (Exception)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
 
     }
 
@@ -67,33 +70,31 @@ public class WellnessRatingController : ControllerBase
     /// <response code="404">No wellness ratings were found.</response>
     /// 
     [HttpGet("userId/{userId}")]
-    public IActionResult GetAllForUserId(Guid userId)
+    public ActionResult<IEnumerable<Dto.WellnessRating>> GetAllForUserId(Guid userId)
     {
-        //get later from auth service 
-       // Guid userId = Guid.Parse("f2d1b702-c81a-11ed-afa1-0242ac120002");
-
         try
         {
             var wellnessRatings = _wellnessRatingService.GetAllForUserId(userId);
 
-            if (wellnessRatings == null)
+            if (!wellnessRatings.Any())
             {
-                return NotFound();
+                return NotFound(new { message = "No Wellness Ratings exists." });
             }
-            var dtos = _mapper.Map<Data.WellnessRating[], Dto.WellnessRating[]>(wellnessRatings);
+            var dtos = _mapper.Map<IEnumerable<Data.WellnessRating>, IEnumerable<Dto.WellnessRating>>(wellnessRatings);
 
-            return new OkObjectResult(dtos);
+            return Ok(dtos);
         }
         catch (UserDoesNotExistException e)
         {
-            return new BadRequestObjectResult(e.Message);
+            return BadRequest(e.Message);
         }
         catch (Exception)
         {
-            return new BadRequestResult();
+            return StatusCode(StatusCodes.Status500InternalServerError);
         }
 
     }
+
     /// <summary>
     /// Creates a new wellness rating for the currently authenticated user.
     /// </summary>
@@ -105,7 +106,7 @@ public class WellnessRatingController : ControllerBase
     /// <response code="400">The request was invalid.</response>
     [HttpPost]
     [ActionName(nameof(Create))]
-    public IActionResult Create(Dto.WellnessRatingForCreation wellnessRatingDto)
+    public ActionResult<Dto.WellnessRating> Create(Dto.WellnessRatingForCreation wellnessRatingDto)
     {
         try
         {
@@ -115,19 +116,23 @@ public class WellnessRatingController : ControllerBase
 
             var _wellnessRatingDto = _mapper.Map<Data.WellnessRating, Dto.WellnessRating>(_wellnessRating);
 
-            return CreatedAtAction(nameof(GetById), new { id = _wellnessRatingDto.Id}, _wellnessRatingDto);
+            return CreatedAtAction(nameof(GetById), new { id = _wellnessRatingDto.Id }, _wellnessRatingDto);
         }
         catch (SameDateException e)
         {
             return new BadRequestObjectResult(e.Message);
         }
-        catch(System.FormatException e)
+        catch (System.FormatException e)
         {
-            return new BadRequestObjectResult(e.Message); 
+            return new BadRequestObjectResult(e.Message);
         }
- 
+        catch (Exception)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
 
     }
+
     /// <summary>
     /// Updates a wellness rating for the currently authenticated user.
     /// </summary>
@@ -136,7 +141,7 @@ public class WellnessRatingController : ControllerBase
     /// <response code="204">The wellness rating was successfully updated.</response>
     /// <response code="400">The request was invalid.</response>
     [HttpPut("{id}")]
-    public IActionResult Update(Dto.WellnessRating wellnessRatingDto, Guid id)
+    public ActionResult<IEnumerable<Dto.WellnessRating>> Update(Dto.WellnessRating wellnessRatingDto, Guid id)
     {
         try
         {
@@ -148,11 +153,15 @@ public class WellnessRatingController : ControllerBase
         }
         catch (NotFoundException e)
         {
-            return new BadRequestObjectResult(e.Message);
+            return BadRequest(e.Message);
         }
         catch (System.FormatException e)
         {
-            return new BadRequestObjectResult(e.Message);
+            return BadRequest(e.Message);
+        }
+        catch (Exception)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError);
         }
 
     }

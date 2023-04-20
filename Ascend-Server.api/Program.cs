@@ -63,7 +63,7 @@ app.UseCors(builder =>
            .AllowAnyMethod();
 });
 
-app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 
@@ -72,11 +72,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseSwagger();
-
-app.UseSwaggerUI(c =>
-{
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Ascend API V1");
-});
 
 app.MapControllers();
 
