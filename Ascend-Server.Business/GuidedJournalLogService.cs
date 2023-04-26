@@ -72,15 +72,11 @@ public class GuidedJournalLogService : IGuidedJournalLogService
         {
             throw new NotFoundException("Journal Log");
         }
-        else
-        {
+
             existingJournalLogPassed.EntryTextValue = guidedJournalLogPassed.EntryTextValue;
 
             existingJournalLogPassed.Date = guidedJournalLogPassed.Date;
 
             _apiContext.SaveChanges();
-        }
-
     }
-
 }

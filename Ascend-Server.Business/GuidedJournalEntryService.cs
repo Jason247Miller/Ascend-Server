@@ -11,7 +11,6 @@ public class GuidedJournalEntryService : IGuidedJournalEntryService
     public GuidedJournalEntryService(ApiContext apiContext)
     {
         _apiContext = apiContext;
-
     }
     public GuidedJournalEntry GetById(Guid id)
     {
@@ -77,13 +76,9 @@ public class GuidedJournalEntryService : IGuidedJournalEntryService
         {
             throw new NotFoundException("Journal Entry");
         }
-        else
-        {
+
             existingJournalEntry.Deleted = true;
 
             _apiContext.SaveChanges();
-        }
-
     }
-
 }

@@ -9,7 +9,6 @@ public class HabitService : IHabitService
     private readonly ApiContext _apiContext;
 
     public HabitService(
-        IUserService userService,
         ApiContext apiContext)
     {
         _apiContext = apiContext;
@@ -77,13 +76,9 @@ public class HabitService : IHabitService
         {
             throw new NotFoundException("Journal Entry");
         }
-        else
-        {
+
             existingHabit.Deleted = true;
 
             _apiContext.SaveChanges();
-        }
-
     }
-
 }

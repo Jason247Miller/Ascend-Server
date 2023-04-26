@@ -9,11 +9,9 @@ public class HabitCompletionLogService : IHabitCompletionLogService
 
     private readonly ApiContext _apiContext;
 
-    public HabitCompletionLogService(IUserService userService,
-                                     ApiContext apiContext)
+    public HabitCompletionLogService(ApiContext apiContext)
     {
         _apiContext = apiContext;
-
     }
 
     public IEnumerable<Data.HabitCompletionLog> GetAllForUserId(Guid userId)
@@ -69,15 +67,11 @@ public class HabitCompletionLogService : IHabitCompletionLogService
         {
             throw new NotFoundException("Habit Completion Log");
         }
-        else
-        {
+
             existingHabitCompletionLog.Completed = habitCompletionLogPassed.Completed;
 
             existingHabitCompletionLog.Date = habitCompletionLogPassed.Date;
 
             _apiContext.SaveChanges();
-        }
-
     }
-
 }

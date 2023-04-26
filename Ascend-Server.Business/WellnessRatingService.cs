@@ -61,8 +61,7 @@ public class WellnessRatingService : IWellnessRatingService
         {
             throw new NotFoundException("Wellness Rating");
         }
-        else
-        {      
+          
             existingRating.Date = wellnessRatingPassed.Date;
             existingRating.SleepRating = wellnessRatingPassed.SleepRating;
             existingRating.ExerciseRating = wellnessRatingPassed.ExerciseRating;
@@ -76,10 +75,7 @@ public class WellnessRatingService : IWellnessRatingService
             existingRating.EnergyRating = wellnessRatingPassed.EnergyRating;
             existingRating.OverallDayRating = wellnessRatingPassed.OverallDayRating;
 
-            _apiContext.SaveChanges();
-           
-        }
+            _apiContext.SaveChanges();          
 
     }
-
 }
