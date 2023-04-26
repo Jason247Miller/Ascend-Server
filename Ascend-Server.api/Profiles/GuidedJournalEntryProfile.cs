@@ -1,5 +1,4 @@
-﻿using Dto;
-using AutoMapper;
+﻿using AutoMapper;
 
 namespace profiles;
 

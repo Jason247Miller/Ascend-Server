@@ -20,7 +20,7 @@ builder.Services.AddAuthentication("Bearer")
 builder.Services.AddApiVersioning(o =>
 {
     o.AssumeDefaultVersionWhenUnspecified = true;
-    o.DefaultApiVersion = new Microsoft.AspNetCore.Mvc.ApiVersion(1, 0);
+    o.DefaultApiVersion = new ApiVersion(1, 0);
     o.ReportApiVersions = true;
     o.ApiVersionReader = ApiVersionReader.Combine(
         new UrlSegmentApiVersionReader()
@@ -46,13 +46,13 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 builder.Services.AddScoped<IWellnessRatingService, WellnessRatingService>();
-builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IHabitService, HabitService>();
 builder.Services.AddScoped<IHabitCompletionLogService, HabitCompletionLogService>();
 builder.Services.AddScoped<IGuidedJournalEntryService, GuidedJournalEntryService>();
 builder.Services.AddScoped<IGuidedJournalLogService, GuidedJournalLogService>();
 builder.Services.AddScoped<ModelStateActionFilter>();
 builder.Services.AddDbContext<ApiContext>(options => options.UseInMemoryDatabase("ApiContext"));
+
 var app = builder.Build();
 
 //configure CORS
@@ -85,7 +85,6 @@ using (var scope = app.Services.CreateScope())
     context.Database.EnsureCreated();
 
     context.Seed(services);
-
 }
 
 app.Run();
