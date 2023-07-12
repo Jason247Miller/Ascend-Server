@@ -1,4 +1,4 @@
-﻿using Ascend_Server.api.Dto;
+﻿using Dto;
 using AutoMapper;
 
 namespace profiles;
@@ -7,7 +7,7 @@ public class WellnessRatingForCreationProfile : Profile
 {
     public WellnessRatingForCreationProfile()
     {
-        CreateMap<WellnessRatingForCreation, Models.WellnessRating>()
+        CreateMap<WellnessRatingForCreation, Data.WellnessRating>()
             .ForMember(
             wr => wr.Id,
             options => options.MapFrom(newId => Guid.NewGuid())

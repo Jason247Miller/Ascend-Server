@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>Ascend_Server.Business</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="7.0.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Ascend-Server.Data\Ascend-Server.Data.csproj" />
+    <ProjectReference Include="..\Ascend-Server.Dto\Ascend-Server.Dto.csproj" />
+  </ItemGroup>
+
+</Project>

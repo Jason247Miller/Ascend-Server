@@ -1,6 +1,4 @@
-﻿using Ascend_Server.api.Dto;
-using AutoMapper;
-using Models;
+﻿using AutoMapper;
 
 namespace profiles;
 
@@ -8,7 +6,7 @@ public class HabitForCreationProfile : Profile
 {
     public HabitForCreationProfile()
     {
-        CreateMap<Ascend_Server.api.Dto.HabitForCreation, Models.Habit>()
+        CreateMap<Dto.HabitForCreation, Data.Habit>()
             .ForMember(
             h => h.Id,
             options => options.MapFrom(newId => Guid.NewGuid())

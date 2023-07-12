@@ -1,4 +1,4 @@
-﻿using Ascend_Server.api.Dto;
+﻿using Dto;
 using AutoMapper;
 
 namespace profiles;
@@ -7,7 +7,7 @@ public class HabitCompletionLogForCreationProfile : Profile
 {
     public HabitCompletionLogForCreationProfile()
     {
-        CreateMap<HabitCompletionLogForCreation, Models.HabitCompletionLog>()
+        CreateMap<HabitCompletionLogForCreation, Data.HabitCompletionLog>()
             .ForMember(
             hcl => hcl.Id,
             options => options.MapFrom(newId => Guid.NewGuid())

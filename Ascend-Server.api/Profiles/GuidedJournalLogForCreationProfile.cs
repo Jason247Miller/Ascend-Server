@@ -1,4 +1,4 @@
-﻿using Ascend_Server.api.Dto;
+﻿using Dto;
 using AutoMapper;
 
 namespace profiles;
@@ -7,7 +7,7 @@ public class GuidedJournalLogForCreationProfile : Profile
 {
     public GuidedJournalLogForCreationProfile()
     {
-        CreateMap<GuidedJournalLogForCreation, Models.GuidedJournalLog>()
+        CreateMap<GuidedJournalLogForCreation, Data.GuidedJournalLog>()
             .ForMember(
             gjl => gjl.Id,
             options => options.MapFrom(newId => Guid.NewGuid())
